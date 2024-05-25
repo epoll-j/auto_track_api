@@ -1,0 +1,23 @@
+{
+  "name": "auto_track_api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:client": "cd client && npm run dev",
+    "start:server": "cd server && npm run dev",
+    "start": "concurrently \"npm:start:client\" \"npm:start:server\"",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "build": "npm run build:client && npm run build:server",
+    "dev": "npm run start",
+    "install-all": "npm run install:client && npm run install:server",
+    "install:client": "cd client && npm install",
+    "install:server": "cd server && npm install"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
