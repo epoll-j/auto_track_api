@@ -12,6 +12,7 @@ import * as cool from '@cool-midway/core';
 import { ILogger } from '@midwayjs/logger';
 import * as upload from '@midwayjs/upload';
 import { IMidwayApplication } from '@midwayjs/core';
+import * as redis from '@midwayjs/redis';
 // import * as swagger from '@midwayjs/swagger';
 // import * as rpc from '@cool-midway/rpc';
 // import * as task from '@cool-midway/task';
@@ -46,6 +47,7 @@ import { IMidwayApplication } from '@midwayjs/core';
       component: info,
       enabledEnvironment: ['local'],
     },
+    redis
   ],
   importConfigs: [join(__dirname, './config')],
 })

@@ -26,6 +26,14 @@ export default {
     fileSize: '200mb',
     whitelist: null,
   },
+  redis: {
+    client: {
+      port: 6379,
+      host: '127.0.0.1',
+      // password: "auth",
+      db: 0,
+    },
+  },
   // 缓存 可切换成其他缓存如：redis http://www.midwayjs.org/docs/extensions/caching
   cacheManager: {
     clients: {
@@ -36,6 +44,13 @@ export default {
           ttl: 0,
         },
       },
+      memory: {
+        store: 'memory',
+        options: {
+          max: 100,
+          ttl: 1000 * 60,
+        },
+      }
     },
   },
   // cacheManager: {

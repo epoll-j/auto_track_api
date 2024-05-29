@@ -17,7 +17,8 @@
     "noImplicitAny": false,
     "typeRoots": [ "./typings", "./node_modules/@types"],
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
     "dist",
