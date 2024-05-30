@@ -50,7 +50,7 @@ export default {
           max: 100,
           ttl: 1000 * 60,
         },
-      }
+      },
     },
   },
   // cacheManager: {

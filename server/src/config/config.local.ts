@@ -23,7 +23,16 @@ export default {
         // 是否开启缓存
         cache: true,
         // 实体路径
-        entities: ['**/modules/base/entity', '**/modules/demo/entity', '**/modules/dict/entity', '**/modules/plugin/entity', '**/modules/recycle/entity', '**/modules/space/entity', '**/modules/task/entity', '**/modules/user/entity'],
+        entities: [
+          '**/modules/base/entity',
+          '**/modules/demo/entity',
+          '**/modules/dict/entity',
+          '**/modules/plugin/entity',
+          '**/modules/recycle/entity',
+          '**/modules/space/entity',
+          '**/modules/task/entity',
+          '**/modules/user/entity',
+        ],
       },
       track: {
         type: 'mysql',
@@ -42,7 +51,7 @@ export default {
         cache: true,
         // 实体路径
         entities: ['**/modules/track/entity'],
-      }
+      },
     },
   },
   cool: {
