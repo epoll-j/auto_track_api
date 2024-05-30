@@ -32,6 +32,9 @@ export class TrackInfo {
   @Column("varchar", { name: "track_ip", length: 200 })
   trackIp: string;
 
+  @Column("varchar", { name: "track_ip_addr", length: 300 })
+  trackIpAddr: string;
+
   @Column("varchar", { name: "app_version", length: 200 })
   appVersion: string;
 
