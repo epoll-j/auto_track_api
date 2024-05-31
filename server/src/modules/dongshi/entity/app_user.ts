@@ -1,4 +1,13 @@
-import { Column, Index, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import {
+  Column,
+  Index,
+  PrimaryGeneratedColumn,
+  Entity,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Track } from './track';
 
 @Index('user_id', ['user_id'], { unique: true })
 @Entity('app_user', { database: 'ds' })
@@ -27,15 +36,15 @@ export class AppUser {
   @Column('varchar', { name: 'device_id', nullable: true, length: 255 })
   device_id: string | null;
 
-  @Column('datetime', {
+  @CreateDateColumn({
+    type: 'datetime',
     name: 'create_time',
-    default: () => 'CURRENT_TIMESTAMP',
   })
   create_time: Date;
 
-  @Column('datetime', {
-    name: 'update_time',
-    default: () => "'0000-00-00 00:00:00'",
-  })
+  @UpdateDateColumn({ type: 'datetime', name: 'update_time' })
   update_time: Date;
+
+  @OneToMany(() => Track, track => track.user)
+  tracks: Track[];
 }

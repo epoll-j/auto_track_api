@@ -1,17 +1,24 @@
-import { Column, Index, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import {
+  Column,
+  Index,
+  PrimaryGeneratedColumn,
+  Entity,
+  ManyToOne,
+  JoinColumn,
+  UpdateDateColumn,
+  CreateDateColumn,
+} from 'typeorm';
+import { AppUser } from './app_user';
 
 @Index(
   'unique_track',
-  ['user_id', 'content_id', 'content_type', 'track_type', 'device_id'],
+  ['user', 'content_id', 'content_type', 'track_type', 'device_id'],
   { unique: true }
 )
 @Entity('track', { database: 'ds' })
 export class Track {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id', unsigned: true })
   id: number;
-
-  @Column('varchar', { name: 'user_id', length: 32 })
-  user_id: string;
 
   @Column('varchar', { name: 'content_id', length: 50 })
   content_id: string;
@@ -31,15 +38,16 @@ export class Track {
   @Column('longtext', { name: 'last_param', nullable: true })
   last_param: string | null;
 
-  @Column('datetime', {
+  @CreateDateColumn({
+    type: 'datetime',
     name: 'create_time',
-    default: () => 'CURRENT_TIMESTAMP',
   })
   create_time: Date;
 
-  @Column('datetime', {
-    name: 'update_time',
-    default: () => "'0000-00-00 00:00:00'",
-  })
+  @UpdateDateColumn({ type: 'datetime', name: 'update_time' })
   update_time: Date;
+
+  @ManyToOne(() => AppUser, user => user.tracks)
+  @JoinColumn({ name: 'user_id' })
+  user: AppUser;
 }
