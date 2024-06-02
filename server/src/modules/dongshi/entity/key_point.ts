@@ -1,4 +1,11 @@
-import { Column, Index, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import {
+  Column,
+  Index,
+  PrimaryGeneratedColumn,
+  Entity,
+  UpdateDateColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Index('book_id', ['book_id'], {})
 @Entity('key_point', { database: 'ds' })
@@ -27,15 +34,12 @@ export class KeyPoint {
   @Column('int', { name: 'sort_by', default: () => "'1'" })
   sort_by: number;
 
-  @Column('datetime', {
+  @CreateDateColumn({
+    type: 'datetime',
     name: 'create_time',
-    default: () => 'CURRENT_TIMESTAMP',
   })
   create_time: Date;
 
-  @Column('datetime', {
-    name: 'update_time',
-    default: () => "'0000-00-00 00:00:00'",
-  })
+  @UpdateDateColumn({ type: 'datetime', name: 'update_time' })
   update_time: Date;
 }

@@ -1,4 +1,10 @@
-import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import {
+  Column,
+  PrimaryGeneratedColumn,
+  Entity,
+  UpdateDateColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity('app_purchase', { database: 'ds' })
 export class AppPurchase {
@@ -65,15 +71,12 @@ export class AppPurchase {
   @Column('varchar', { name: 'purchase_currency', length: 50 })
   purchase_currency: string;
 
-  @Column('datetime', {
+  @CreateDateColumn({
+    type: 'datetime',
     name: 'create_time',
-    default: () => 'CURRENT_TIMESTAMP',
   })
   create_time: Date;
 
-  @Column('datetime', {
-    name: 'update_time',
-    default: () => "'0000-00-00 00:00:00'",
-  })
+  @UpdateDateColumn({ type: 'datetime', name: 'update_time' })
   update_time: Date;
 }

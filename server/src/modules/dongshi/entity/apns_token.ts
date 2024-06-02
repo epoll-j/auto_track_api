@@ -1,4 +1,11 @@
-import { Column, Index, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import {
+  Column,
+  Index,
+  PrimaryGeneratedColumn,
+  Entity,
+  UpdateDateColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Index('user_id', ['user_id'], { unique: true })
 @Entity('apns_token', { database: 'ds' })
@@ -23,15 +30,12 @@ export class ApnsToken {
   @Column('int', { name: 'push_status', default: () => "'1'" })
   push_status: number;
 
-  @Column('datetime', {
+  @CreateDateColumn({
+    type: 'datetime',
     name: 'create_time',
-    default: () => 'CURRENT_TIMESTAMP',
   })
   create_time: Date;
 
-  @Column('datetime', {
-    name: 'update_time',
-    default: () => "'0000-00-00 00:00:00'",
-  })
+  @UpdateDateColumn({ type: 'datetime', name: 'update_time' })
   update_time: Date;
 }

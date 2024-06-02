@@ -1,4 +1,9 @@
-import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import {
+  Column,
+  PrimaryGeneratedColumn,
+  Entity,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity('app_error', { database: 'ds' })
 export class AppError {
@@ -11,9 +16,9 @@ export class AppError {
   @Column('longtext', { name: 'error_message' })
   error_message: string;
 
-  @Column('datetime', {
+  @CreateDateColumn({
+    type: 'datetime',
     name: 'create_time',
-    default: () => 'CURRENT_TIMESTAMP',
   })
   create_time: Date;
 }

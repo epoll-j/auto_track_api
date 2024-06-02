@@ -1,4 +1,9 @@
-import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import {
+  Column,
+  PrimaryGeneratedColumn,
+  Entity,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity('iap_notification', { database: 'ds' })
 export class IapNotification {
@@ -11,9 +16,9 @@ export class IapNotification {
   @Column('longtext', { name: 'payload_data' })
   payload_data: string;
 
-  @Column('datetime', {
+  @CreateDateColumn({
+    type: 'datetime',
     name: 'create_time',
-    default: () => 'CURRENT_TIMESTAMP',
   })
   create_time: Date;
 }

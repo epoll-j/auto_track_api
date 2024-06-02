@@ -1,4 +1,10 @@
-import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import {
+  Column,
+  PrimaryGeneratedColumn,
+  Entity,
+  UpdateDateColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity('book', { database: 'ds' })
 export class Book {
@@ -47,15 +53,12 @@ export class Book {
   @Column('int', { name: 'book_status', default: () => "'1'" })
   book_status: number;
 
-  @Column('datetime', {
+  @CreateDateColumn({
+    type: 'datetime',
     name: 'create_time',
-    default: () => 'CURRENT_TIMESTAMP',
   })
   create_time: Date;
 
-  @Column('datetime', {
-    name: 'update_time',
-    default: () => "'0000-00-00 00:00:00'",
-  })
+  @UpdateDateColumn({ type: 'datetime', name: 'update_time' })
   update_time: Date;
 }

@@ -1,4 +1,9 @@
-import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import {
+  Column,
+  PrimaryGeneratedColumn,
+  Entity,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity('apns_click', { database: 'ds' })
 export class ApnsClick {
@@ -14,9 +19,9 @@ export class ApnsClick {
   @Column('longtext', { name: 'apns_content' })
   apns_content: string;
 
-  @Column('datetime', {
+  @CreateDateColumn({
+    type: 'datetime',
     name: 'create_time',
-    default: () => 'CURRENT_TIMESTAMP',
   })
   create_time: Date;
 }

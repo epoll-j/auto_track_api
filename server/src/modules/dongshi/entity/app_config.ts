@@ -1,4 +1,9 @@
-import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import {
+  Column,
+  PrimaryGeneratedColumn,
+  Entity,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity('app_config', { database: 'ds' })
 export class AppConfig {
@@ -11,9 +16,9 @@ export class AppConfig {
   @Column('longtext', { name: 'config_body' })
   config_body: string;
 
-  @Column('datetime', {
+  @CreateDateColumn({
+    type: 'datetime',
     name: 'create_time',
-    default: () => 'CURRENT_TIMESTAMP',
   })
   create_time: Date;
 }

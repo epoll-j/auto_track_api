@@ -15,47 +15,52 @@ export class UserController extends BaseController {
   @Post('/login')
   async login(@Body() body: { phone: string; code: string }) {
     const result = await this.userService.loginByPhone(body.phone, body.code);
-    this.ctx.body = result;
+    return this._handlerServiceRes(result);
   }
 
   @Post('/register')
   async register() {
     const result = await this.userService.register();
-    this.ctx.body = result;
+    return this._handlerServiceRes(result);
   }
 
   @Post('/bindPhone')
   async bindPhone(@Body() body: { phone: string; code: string }) {
     const { user } = this.ctx;
     if (!user) {
-      this.ctx.body = {
-        code: -1,
-      };
-      return;
+      return this.fail('请重新登录', -1);
     }
     const result = await this.userService.bindPhone(
       body.phone,
       body.code,
       user.user_id
     );
-    this.ctx.body = result;
+    return this._handlerServiceRes(result);
   }
 
   @Get('/info')
   async userInfo() {
     const result = await this.userService.getInfo();
-    this.ctx.body = result;
+    return this._handlerServiceRes(result);
   }
 
   @Post('/closeAccount')
   async closeAccount() {
     const result = await this.userService.closeAccount();
-    this.ctx.body = result;
+    return this._handlerServiceRes(result);
   }
 
   @Post('/apnsToken')
   async apnsToken(@Body() body: { token: string }) {
     const result = await this.userService.updateApnsToken(body.token);
-    this.ctx.body = result;
+    return this._handlerServiceRes(result);
+  }
+
+  _handlerServiceRes(res: { code: number; msg?: string; data?: any }) {
+    if (res.code === 1) {
+      return this.ok(res.data);
+    } else {
+      return { ...this.fail(res.msg, res.code), msg: res.msg };
+    }
   }
 }
