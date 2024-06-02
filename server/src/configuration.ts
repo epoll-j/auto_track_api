@@ -47,7 +47,7 @@ import * as redis from '@midwayjs/redis';
       component: info,
       enabledEnvironment: ['local'],
     },
-    redis
+    redis,
   ],
   importConfigs: [join(__dirname, './config')],
 })
@@ -58,5 +58,13 @@ export class ContainerLifeCycle {
   @Inject()
   logger: ILogger;
 
-  async onReady() {}
+  async onReady() {
+    const config = cool.GlobalConfig.getInstance();
+    config.RESCODE = {
+      SUCCESS: 1,
+      COMMFAIL: 0,
+      VALIDATEFAIL: -1,
+      COREFAIL: -2,
+    };
+  }
 }
