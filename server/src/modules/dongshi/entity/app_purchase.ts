@@ -77,6 +77,6 @@ export class AppPurchase {
   })
   create_time: Date;
 
-  @UpdateDateColumn({ type: 'datetime', name: 'update_time' })
+  @UpdateDateColumn({ type: 'datetime', name: 'update_time', nullable: true })
   update_time: Date;
 }

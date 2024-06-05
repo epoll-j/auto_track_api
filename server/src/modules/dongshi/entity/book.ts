@@ -20,8 +20,8 @@ export class Book {
   @Column('int', { name: 'reading_time', default: () => "'0'" })
   reading_time: number;
 
-  @Column('longtext', { name: 'tags' })
-  tags: string;
+  @Column('json', { name: 'tags' })
+  tags: any;
 
   @Column('varchar', { name: 'book_desc', length: 2048 })
   book_desc: string;
@@ -59,6 +59,6 @@ export class Book {
   })
   create_time: Date;
 
-  @UpdateDateColumn({ type: 'datetime', name: 'update_time' })
+  @UpdateDateColumn({ type: 'datetime', name: 'update_time', nullable: true })
   update_time: Date;
 }

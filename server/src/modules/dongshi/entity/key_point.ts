@@ -25,8 +25,8 @@ export class KeyPoint {
   @Column('varchar', { name: 'title', length: 200 })
   title: string;
 
-  @Column('longtext', { name: 'content' })
-  content: string;
+  @Column('json', { name: 'content' })
+  content: any;
 
   @Column('int', { name: 'point_status', default: () => "'1'" })
   point_status: number;
@@ -40,6 +40,6 @@ export class KeyPoint {
   })
   create_time: Date;
 
-  @UpdateDateColumn({ type: 'datetime', name: 'update_time' })
+  @UpdateDateColumn({ type: 'datetime', name: 'update_time', nullable: true })
   update_time: Date;
 }

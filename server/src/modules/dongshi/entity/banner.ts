@@ -23,8 +23,8 @@ export class Banner {
   @Column('int', { name: 'banner_status', default: () => "'1'" })
   banner_status: number;
 
-  @Column('longtext', { name: 'param' })
-  param: string;
+  @Column('json', { name: 'param' })
+  param: any;
 
   @Column('int', { name: 'sort_by', default: () => "'1'" })
   sort_by: number;
@@ -35,6 +35,6 @@ export class Banner {
   })
   create_time: Date;
 
-  @UpdateDateColumn({ type: 'datetime', name: 'update_time' })
+  @UpdateDateColumn({ type: 'datetime', name: 'update_time', nullable: true })
   update_time: Date;
 }

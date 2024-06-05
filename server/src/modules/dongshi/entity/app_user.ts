@@ -3,11 +3,9 @@ import {
   Index,
   PrimaryGeneratedColumn,
   Entity,
-  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Track } from './track';
 
 @Index('user_id', ['user_id'], { unique: true })
 @Entity('app_user', { database: 'ds' })
@@ -42,9 +40,6 @@ export class AppUser {
   })
   create_time: Date;
 
-  @UpdateDateColumn({ type: 'datetime', name: 'update_time' })
+  @UpdateDateColumn({ type: 'datetime', name: 'update_time', nullable: true })
   update_time: Date;
-
-  @OneToMany(() => Track, track => track.user)
-  tracks: Track[];
 }
