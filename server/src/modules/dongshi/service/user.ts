@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import * as moment from 'moment';
-import { Redis } from '@midwayjs/redis';
+import { RedisService } from '@midwayjs/redis';
 import * as jwt from 'jsonwebtoken';
 import { AppUser } from '../entity/app_user';
 import { ApnsToken } from '../entity/apns_token';
@@ -23,7 +23,7 @@ export class UserService extends BaseService {
   trackRepo: Repository<Track>;
 
   @Inject()
-  redis: Redis;
+  redis: RedisService;
 
   @Inject()
   ctx: Context;

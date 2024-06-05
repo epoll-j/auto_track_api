@@ -1,7 +1,8 @@
 import { Post, Inject, Provide, Get, Body } from '@midwayjs/decorator';
 import { Context } from '@midwayjs/koa';
 import { UserService } from '../../service/user';
-import { BaseController, CoolController } from '@cool-midway/core';
+import { CoolController } from '@cool-midway/core';
+import BaseController from '../base_controller';
 
 @Provide()
 @CoolController('/api/user')
@@ -28,7 +29,7 @@ export class UserController extends BaseController {
   async bindPhone(@Body() body: { phone: string; code: string }) {
     const { user } = this.ctx;
     if (!user) {
-      return this.fail('请重新登录', -1);
+      return this.auth('请重新登录');
     }
     const result = await this.userService.bindPhone(
       body.phone,

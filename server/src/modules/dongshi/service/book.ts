@@ -39,9 +39,7 @@ export class BookService extends BaseService {
       bookList = await this.bookRepo
         .createQueryBuilder('book')
         .where('book.book_status = :status', { status: 1 })
-        .andWhere('JSON_CONTAINS(book.tags, :tag)', {
-          tag: JSON.stringify(tag),
-        })
+        .andWhere('JSON_CONTAINS(tags, JSON_ARRAY(:tag))', { tag })
         .orderBy('book.sort_by', 'DESC')
         .getMany();
     } else {
@@ -54,9 +52,7 @@ export class BookService extends BaseService {
         bookList = await this.bookRepo
           .createQueryBuilder('book')
           .where('book.book_status = :status', { status: 1 })
-          .andWhere('JSON_CONTAINS(book.tags, :tag)', {
-            tag: JSON.stringify(searchTag),
-          })
+          .andWhere('JSON_CONTAINS(tags, JSON_ARRAY(:tag))', { tag: searchTag })
           .orderBy('book.sort_by', 'DESC')
           .getMany();
       } else if (

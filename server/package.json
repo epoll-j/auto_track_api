@@ -4,6 +4,7 @@
   "description": "一个项目用COOL就够了",
   "private": true,
   "dependencies": {
+    "@apple/app-store-server-library": "^1.2.0",
     "@cool-midway/core": "^7.1.19",
     "@cool-midway/rpc": "^7.0.0",
     "@cool-midway/task": "^7.0.0",
