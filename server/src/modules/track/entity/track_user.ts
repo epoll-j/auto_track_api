@@ -1,5 +1,6 @@
-import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import { Column, PrimaryGeneratedColumn, Entity, Index } from 'typeorm';
 
+@Index('user_id', ['userId'], { unique: true })
 @Entity('track_user', { database: 'track' })
 export class TrackUser {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id', unsigned: true })

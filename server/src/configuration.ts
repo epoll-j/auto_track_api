@@ -59,12 +59,12 @@ export class ContainerLifeCycle {
   logger: ILogger;
 
   async onReady() {
-    const config = cool.GlobalConfig.getInstance();
-    config.RESCODE = {
-      SUCCESS: 1,
-      COMMFAIL: 0,
-      VALIDATEFAIL: -1,
-      COREFAIL: -2,
-    };
+    // const config = cool.GlobalConfig.getInstance();
+    // config.RESCODE = {
+    //   SUCCESS: 1,
+    //   COMMFAIL: 0,
+    //   VALIDATEFAIL: -1,
+    //   COREFAIL: -2,
+    // };
   }
 }
