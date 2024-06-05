@@ -64,7 +64,7 @@ export class BookService extends BaseService {
         if (intType === SearchType.CONTINUE) {
           trackList = await this.trackRepo.find({
             where: {
-              user: { user_id: userId },
+              user_id: userId,
               content_type: 0,
               track_type: 0,
             },
@@ -110,7 +110,7 @@ export class BookService extends BaseService {
       if (user) {
         const progressIndex = await this.trackRepo.findOne({
           where: {
-            user: { user_id: user.user_id },
+            user_id: user.user_id,
             content_type: 0,
             track_type: 0,
             content_id: item.id,
@@ -197,11 +197,10 @@ export class BookService extends BaseService {
       select: ['id', 'audio_time', 'audio_url', 'title', 'content'],
       order: { sort_by: 'DESC' },
     });
-
     if (user) {
       const progressIndex = await this.trackRepo.findOne({
         where: {
-          user: { user_id: user.user_id },
+          user_id: user.user_id,
           content_type: 0,
           track_type: 0,
           content_id: `${id}`,
@@ -209,18 +208,18 @@ export class BookService extends BaseService {
         select: ['param'],
       });
       if (progressIndex) {
-        book['progress_index'] = Number(JSON.parse(progressIndex.param).index);
+        book['progress_index'] = Number((progressIndex.param as any).index);
       }
       const late = await this.trackRepo.findOne({
         where: {
-          user: { user_id: user.user_id },
+          user_id: user.user_id,
           content_type: 0,
           track_type: 1,
           content_id: `${id}`,
         },
         select: ['param'],
       });
-      book['late'] = late ? Number(JSON.parse(late.param).late) : 0;
+      book['late'] = late ? Number((late.param as any).late) : 0;
     }
 
     return {

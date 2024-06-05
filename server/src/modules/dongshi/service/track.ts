@@ -27,7 +27,7 @@ export class TrackService extends BaseService {
     // 查找是否存在记录
     let track = await this.trackRepo.findOne({
       where: {
-        user: { user_id: userId },
+        user_id: userId,
         content_type,
         content_id,
         track_type,
@@ -42,7 +42,7 @@ export class TrackService extends BaseService {
     } else {
       // 如果不存在，则创建新记录
       track = this.trackRepo.create({
-        user: { user_id: userId },
+        user_id: userId,
         content_type,
         content_id,
         track_type,
@@ -53,7 +53,6 @@ export class TrackService extends BaseService {
 
     // 保存
     await this.trackRepo.save(track);
-
     return { success: true };
   }
 }

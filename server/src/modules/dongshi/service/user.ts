@@ -237,7 +237,7 @@ export class UserService extends BaseService {
         await transactionalEntityManager.save(user);
 
         const track = new Track();
-        track.user = user;
+        track.user_id = user.user_id;
         track.content_id = transactionId;
         track.content_type = 1;
         track.track_type = 1;
