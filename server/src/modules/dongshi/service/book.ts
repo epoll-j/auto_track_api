@@ -118,9 +118,7 @@ export class BookService extends BaseService {
           select: ['param'],
         });
         if (progressIndex) {
-          item['progress_index'] = Number(
-            JSON.parse(progressIndex.param).index
-          );
+          item['progress_index'] = Number(progressIndex.param.index);
         }
       }
 
@@ -208,7 +206,7 @@ export class BookService extends BaseService {
         select: ['param'],
       });
       if (progressIndex) {
-        book['progress_index'] = Number((progressIndex.param as any).index);
+        book['progress_index'] = Number(progressIndex.param.index);
       }
       const late = await this.trackRepo.findOne({
         where: {
@@ -219,12 +217,15 @@ export class BookService extends BaseService {
         },
         select: ['param'],
       });
-      book['late'] = late ? Number((late.param as any).late) : 0;
+      book['late'] = late ? Number(late.param.late) : 0;
     }
 
     return {
       ...book,
-      key_point: keyPoint,
+      key_point: keyPoint.map((item: any) => ({
+        ...item,
+        content: JSON.stringify(item.content),
+      })),
       free: book.is_free === 1,
     };
   }
