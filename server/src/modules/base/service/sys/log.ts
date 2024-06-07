@@ -32,7 +32,7 @@ export class BaseSysLogService extends BaseService {
    * @param params 参数
    * @param userId 用户ID
    */
-  async record(context: Context, url, params, userId) {
+  async record(context: Context, url, params, userId, userType, deviceId) {
     const ip = await this.utils.getReqIP(context);
     const sysLog = new BaseSysLogEntity();
     sysLog.userId = userId;
@@ -43,6 +43,8 @@ export class BaseSysLogService extends BaseService {
     sysLog.ipAddr = ipAddrArr.join(',');
     sysLog.action = url.split('?')[0];
     sysLog.params = params;
+    sysLog.userType = userType;
+    sysLog.deviceId = deviceId;
     await this.baseSysLogEntity.insert(sysLog);
   }
 
