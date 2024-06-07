@@ -46,9 +46,9 @@ export class UserSmsService extends BaseService {
    * 发送验证码
    * @param phone
    */
-  async sendSms(phone) {
+  async sendSms(phone: string, config?: any) {
     // 随机四位验证码
-    const code = _.random(1000, 9999);
+    const code = _.random(10000, 99999);
     const pluginKey = this.config.pluginKey;
     if (!this.plugin) throw new CoolCommException('未配置短信插件');
     try {
@@ -56,9 +56,13 @@ export class UserSmsService extends BaseService {
         await this.plugin.send([phone], [code]);
       }
       if (pluginKey == 'sms-ali') {
-        await this.plugin.send([phone], {
-          code,
-        });
+        await this.plugin.send(
+          [phone],
+          {
+            code,
+          },
+          config
+        );
       }
       this.midwayCache.set(`sms:${phone}`, code, this.config.timeout * 1000);
     } catch (error) {
