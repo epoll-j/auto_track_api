@@ -48,7 +48,7 @@ export class UserSmsService extends BaseService {
    */
   async sendSms(phone: string, config?: any) {
     // 随机四位验证码
-    const code = _.random(10000, 99999);
+    const code = _.random(100000, 999999);
     const pluginKey = this.config.pluginKey;
     if (!this.plugin) throw new CoolCommException('未配置短信插件');
     try {

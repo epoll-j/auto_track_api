@@ -258,8 +258,8 @@ export class BookService extends BaseService {
           `http://cdn.iflow.mobi/jianshu/book/${book.title}/${index}.wav`,
         audio_time: item.audio_time || 0,
         title: item.title,
-        content: JSON.stringify(item.content),
-        book: bookEntity,
+        content: item.content,
+        book_id: bookEntity.id,
       });
       index += 1;
     }
