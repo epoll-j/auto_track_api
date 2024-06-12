@@ -1,9 +1,9 @@
+import { UserSmsService } from './../../user/service/sms';
 import { Provide, Inject, App, Config } from '@midwayjs/decorator';
 import { Repository } from 'typeorm';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import * as moment from 'moment';
-import { RedisService } from '@midwayjs/redis';
 import * as jwt from 'jsonwebtoken';
 import { AppUser } from '../entity/app_user';
 import { ApnsToken } from '../entity/apns_token';
@@ -23,7 +23,7 @@ export class UserService extends BaseService {
   trackRepo: Repository<Track>;
 
   @Inject()
-  redis: RedisService;
+  smsService: UserSmsService;
 
   @Inject()
   ctx: Context;
@@ -33,8 +33,7 @@ export class UserService extends BaseService {
 
   async loginByPhone(phone: string, code: string) {
     if (phone !== '16626423431') {
-      const dbCode = await this.redis.get(phone);
-      if (code !== dbCode) {
+      if (!(await this.smsService.checkCode(phone, code))) {
         return { code: 0, msg: '验证码错误' };
       }
     } else {
@@ -85,8 +84,7 @@ export class UserService extends BaseService {
 
   async bindPhone(phone: string, code: string, userId: string) {
     if (code !== '909090') {
-      const dbCode = await this.redis.get(phone);
-      if (code !== dbCode) {
+      if (!(await this.smsService.checkCode(phone, code))) {
         return { code: 0, msg: '验证码错误' };
       }
     }
