@@ -18,7 +18,15 @@ export class UserController extends BaseController {
   @Get('/config')
   async getConfig() {
     const config: any = await this.dictInfoService.data(['ds']);
-    return this.ok(JSON.parse(config.ds[0].value));
+    const result = {};
+    for (const item of config.ds) {
+      try {
+        result[item.name] = JSON.parse(item.value);
+      } catch {
+        result[item.name] = item.value;
+      }
+    }
+    return this.ok(result);
   }
 
   @Get('/sms')
