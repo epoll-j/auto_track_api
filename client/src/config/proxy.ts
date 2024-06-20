@@ -6,8 +6,9 @@ export const proxy = {
 	},
 
 	"/prod/": {
-		target: "https://show.cool-admin.com",
+		target: "https://api.iflow.mobi",
+		// target: "http://127.0.0.1:8001",
 		changeOrigin: true,
-		rewrite: (path: string) => path.replace(/^\/prod/, "/api")
+		rewrite: (path: string) => path.replace(/^\/prod/, "")
 	}
 };

@@ -244,11 +244,11 @@ export class BookService extends BaseService {
       about_author: book.about_author || 'about_author',
       second_author: book.second_author,
       learn: JSON.stringify(book.learn || 'learn').replace(/^"|"$/g, ''),
-      tags: JSON.stringify(book.tags || []),
+      tags: [],
     });
 
     const bookEntity = await this.bookRepo.save(newBook);
-    const keyPoints = JSON.parse(book.key_point);
+    const keyPoints = book.key_point;
     let index = 1;
 
     for (const item of keyPoints) {
@@ -265,5 +265,16 @@ export class BookService extends BaseService {
     }
 
     return 'success';
+  }
+
+  async delete(ids) {
+    let idArr;
+    if (ids instanceof Array) {
+      idArr = ids;
+    } else {
+      idArr = ids.split(',');
+    }
+    await this.bookRepo.delete({ id: In(idArr) });
+    await this.keyPointRepo.delete({ book_id: In(idArr) });
   }
 }

@@ -55,7 +55,7 @@ export class Book {
 
   @CreateDateColumn({
     type: 'datetime',
-    name: 'create_time',
+    name: 'createTime',
   })
   create_time: Date;
 
