@@ -244,7 +244,7 @@ export class BookService extends BaseService {
       about_author: book.about_author || 'about_author',
       second_author: book.second_author,
       learn: JSON.stringify(book.learn || 'learn').replace(/^"|"$/g, ''),
-      tags: [],
+      tags: book.tags || [],
     });
 
     const bookEntity = await this.bookRepo.save(newBook);
