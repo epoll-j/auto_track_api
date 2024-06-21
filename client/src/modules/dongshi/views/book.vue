@@ -110,7 +110,7 @@ const handleFileSelected = (val) => {
 								if (content !== "") {
 									pointContent.push({
 										type: "content",
-										value: content.slice(0, -1)
+										value: content.slice(0, -2)
 									});
 									content = "";
 								}
