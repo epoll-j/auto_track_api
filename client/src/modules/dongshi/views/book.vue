@@ -83,7 +83,7 @@ const handleFileSelected = (val) => {
 						const key = dom.innerHTML;
 						const value = body.children[index + 1].innerHTML;
 						if (keyMap[key]) {
-							result[keyMap[key]] = value;
+							result[keyMap[key]] = `${value}`;
 						}
 						index++;
 					} else if (type === "h3") {
@@ -102,10 +102,10 @@ const handleFileSelected = (val) => {
 						for (const child of children) {
 							const localName = child.localName;
 							if (localName === "p") {
-								content += `${child.innerHTML}\n`;
+								content += `${child.innerHTML}\n\n`;
 							} else if (localName === "ol") {
 								const index = child.getAttribute("start");
-								content += `${index}. ${child.children[0].innerHTML}\n`;
+								content += `${index}. ${child.children[0].innerHTML}\n\n`;
 							} else if (localName === "blockquote") {
 								if (content !== "") {
 									pointContent.push({
@@ -133,6 +133,9 @@ const handleFileSelected = (val) => {
 					}
 				}
 				result["key_point"] = points;
+				if (result["learn"]) {
+					result["learn"] = result["learn"].replace(/\\n/g, "\n");
+				}
 				bookJson.value = JSON.stringify(result, null, 4);
 			}
 		};
