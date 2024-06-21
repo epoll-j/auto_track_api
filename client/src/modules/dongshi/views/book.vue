@@ -37,7 +37,9 @@
 				<div class="el-upload__text">拖拽或<em>点击上传</em></div>
 			</el-upload>
 			<el-input autosize class="json-input" v-model="bookJson" type="textarea" />
-			<el-button @click="handleUpload" type="primary" class="upload-button">导入</el-button>
+			<el-button :loading="loading" @click="handleUpload" type="primary" class="upload-button"
+				>导入</el-button
+			>
 		</cl-dialog>
 	</cl-crud>
 </template>
@@ -51,6 +53,7 @@ import { ElMessage } from "element-plus";
 
 const { service } = useCool();
 const visible = ref(false);
+const loading = ref(false);
 const bookJson = ref("");
 
 const handleFileSelected = (val) => {
@@ -83,7 +86,9 @@ const handleFileSelected = (val) => {
 						const key = dom.innerHTML;
 						const value = body.children[index + 1].innerHTML;
 						if (keyMap[key]) {
-							result[keyMap[key]] = `${value}`;
+							result[keyMap[key]] = `${value}`
+								.replaceAll("&amp;", "&")
+								.replaceAll("<br>", "\n");
 						}
 						index++;
 					} else if (type === "h3") {
@@ -145,6 +150,7 @@ const handleFileSelected = (val) => {
 };
 
 const handleUpload = () => {
+	loading.value = true;
 	service.dongshi.book
 		.create(JSON.parse(bookJson.value))
 		.then(() => {
@@ -153,6 +159,9 @@ const handleUpload = () => {
 		})
 		.catch((err) => {
 			ElMessage.error(err.message);
+		})
+		.finally(() => {
+			loading.value = false;
 		});
 };
 // cl-crud
