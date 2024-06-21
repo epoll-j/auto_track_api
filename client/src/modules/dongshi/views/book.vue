@@ -88,7 +88,8 @@ const handleFileSelected = (val) => {
 						if (keyMap[key]) {
 							result[keyMap[key]] = `${value}`
 								.replaceAll("&amp;", "&")
-								.replaceAll("<br>", "\n");
+								.replaceAll("<br>", "\n")
+								.replaceAll(/\\n/g, "\n");
 						}
 						index++;
 					} else if (type === "h3") {
@@ -138,9 +139,6 @@ const handleFileSelected = (val) => {
 					}
 				}
 				result["key_point"] = points;
-				if (result["learn"]) {
-					result["learn"] = result["learn"].replace(/\\n/g, "\n");
-				}
 				bookJson.value = JSON.stringify(result, null, 4);
 			}
 		};
