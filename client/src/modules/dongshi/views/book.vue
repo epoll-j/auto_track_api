@@ -109,7 +109,7 @@ const handleFileSelected = (val) => {
 							} else if (localName === "blockquote") {
 								if (content !== "") {
 									pointContent.push({
-										type: "conent",
+										type: "content",
 										value: content
 									});
 									content = "";
@@ -122,7 +122,7 @@ const handleFileSelected = (val) => {
 						}
 						if (content !== "") {
 							pointContent.push({
-								type: "conent",
+								type: "content",
 								value: content
 							});
 						}
