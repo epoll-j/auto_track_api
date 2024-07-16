@@ -82,7 +82,7 @@ export class TrackService extends BaseService {
         await this.redis.incr(nuKey);
       } else {
         if (
-          new Date().getTime() - user.updateTime.getTime() >
+          new Date().getTime() - (user.updateTime || new Date()).getTime() >
           1000 * 60 * 60 * 12
         ) {
           user.appVersion = app_version;
