@@ -1,4 +1,4 @@
-import { Inject, Provide, Get, Body } from '@midwayjs/decorator';
+import { Inject, Provide, Body, Post } from '@midwayjs/decorator';
 import { Context } from '@midwayjs/koa';
 import { CoolController } from '@cool-midway/core';
 import BaseController from '../base_controller';
@@ -12,14 +12,14 @@ export class PurchaseController extends BaseController {
   @Inject()
   purchaseService: PurchaseService;
 
-  @Get('/notification/apple')
+  @Post('/notification/apple')
   async notificationByApple(@Body() body: any) {
     return this.ok(
       await this.purchaseService.handlerAppleNotification(body.signedPayload)
     );
   }
 
-  @Get('/verify/iap')
+  @Post('/verify/iap')
   async getBanner(@Body() body: any) {
     const { transactionId } = body;
     const { user } = this.ctx;
