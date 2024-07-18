@@ -1,14 +1,15 @@
-import { Inject } from '@midwayjs/core';
+import { Inject, Provide } from '@midwayjs/core';
 import { RedisService } from '@midwayjs/redis';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Repository } from 'typeorm';
-import moment from 'moment';
+import * as moment from 'moment';
 import { BaseService } from '@cool-midway/core';
 import { AppInfo } from '../entity/track_app_info';
 import { TrackStatistics } from '../entity/track_statistics';
 import { TrackInfo } from '../entity/track_info';
 import { TrackUser } from '../entity/track_user';
 
+@Provide()
 export class DataStatisticsService extends BaseService {
   @Inject()
   redis: RedisService;
@@ -17,7 +18,7 @@ export class DataStatisticsService extends BaseService {
   @InjectEntityModel(TrackStatistics)
   statisticsModel: Repository<TrackStatistics>;
   @InjectEntityModel(TrackInfo)
-  userTrackModel: Repository<TrackInfo>;
+  trackInfoModel: Repository<TrackInfo>;
   @InjectEntityModel(TrackUser)
   appUserModel: Repository<TrackUser>;
 
@@ -37,16 +38,16 @@ export class DataStatisticsService extends BaseService {
         appKey,
       });
 
-      const trackCount = await this.userTrackModel
-        .createQueryBuilder('user_track')
-        .select('user_track.trackKey', 'track_key')
-        .addSelect('user_track.trackType', 'track_type')
-        .addSelect('COUNT(user_track.id)', 'num')
+      const trackCount = await this.trackInfoModel
+        .createQueryBuilder('track_info')
+        .select('track_info.trackKey', 'track_key')
+        .addSelect('track_info.trackType', 'track_type')
+        .addSelect('COUNT(track_info.id)', 'num')
         .where(
-          'DATE(user_track.createTime) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)'
+          'DATE(track_info.createTime) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)'
         )
-        .groupBy('user_track.trackKey')
-        .addGroupBy('user_track.trackType')
+        .groupBy('track_info.trackKey')
+        .addGroupBy('track_info.trackType')
         .getRawMany();
 
       const statistics = new TrackStatistics();
@@ -59,6 +60,8 @@ export class DataStatisticsService extends BaseService {
       await this.statisticsModel.insert(statistics);
       await this.redis.del(dauKey);
       await this.redis.del(nuKey);
+
+      return '日活统计成功';
     }
   }
 }
