@@ -82,14 +82,14 @@ export class TrackService extends BaseService {
         await this.redis.incr(nuKey);
       } else {
         if (
-          new Date().getTime() - (user.updateTime || new Date()).getTime() >
-          1000 * 60 * 60 * 12
+          !user.updateTime ||
+          new Date().getTime() - user.updateTime.getTime() > 1000 * 60 * 60 * 12
         ) {
           user.appVersion = app_version;
           user.deviceInfo = JSON.stringify(device_info);
           user.loginIp = ip;
           user.ipRegion = ipAddrArr.join(',');
-
+          await this.redis.del(`${app_key}:user:${user.userId}`);
           await this.trackUserEntity.save(user);
         }
       }
