@@ -77,7 +77,7 @@ export class TrackService extends BaseService {
         newUser.ipRegion = ipAddrArr.join(',');
         newUser.deviceId = device_id;
         newUser.uniqueId = unique_id;
-        user = await this.trackUserEntity.save(newUser);
+        user = await this.trackUserEntity.create(newUser);
         const nuKey = `${app_key}:nu`;
         await this.redis.incr(nuKey);
       } else {
