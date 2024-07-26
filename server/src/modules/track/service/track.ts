@@ -89,6 +89,7 @@ export class TrackService extends BaseService {
           user.deviceInfo = JSON.stringify(device_info);
           user.loginIp = ip;
           user.ipRegion = ipAddrArr.join(',');
+          user.updateTime = new Date();
           await this.redis.del(`${app_key}:user:${user.userId}`);
           await this.trackUserEntity.save(user);
         }
