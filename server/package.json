@@ -23,6 +23,7 @@
     "@midwayjs/upload": "^3.16.1",
     "@midwayjs/validate": "^3.16.1",
     "@midwayjs/view-ejs": "^3.16.1",
+    "apns2": "^11.7.0",
     "axios": "^1.6.8",
     "crypto": "^1.0.1",
     "decompress": "^4.2.1",
@@ -37,9 +38,9 @@
     "svg-captcha": "^1.4.0",
     "svg2png-wasm": "^1.4.1",
     "typeorm": "^0.3.20",
+    "typescript": "~5.4.5",
     "uuid": "^9.0.1",
-    "ws": "^8.17.0",
-    "typescript": "~5.4.5"
+    "ws": "^8.17.0"
   },
   "devDependencies": {
     "@midwayjs/mock": "^3.16.0",
