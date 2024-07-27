@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Context } from '@midwayjs/koa';
 import { ApnsClient, Host, Notification } from 'apns2';
 import { ApnsToken } from '../entity/apns_token';
+import { error } from 'console';
 
 @Provide()
 export class ApnsService {
@@ -43,9 +44,9 @@ export class ApnsService {
       const notifications = token.map(
         item => new Notification(item.device_token, body)
       );
-      await this.apnsClient.sendMany(notifications);
+      console.log(await this.apnsClient.sendMany(notifications));
     } catch (err) {
-      return err;
+      console.log(err);
     }
 
     return { code: 1 };
