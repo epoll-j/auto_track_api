@@ -27,7 +27,7 @@ export class ApnsService {
       host: Host.production,
       signingKey: this.apnsConfig.key,
       defaultTopic: this.apnsConfig.defaultTopic,
-      requestTimeout: 100, // optional, Default: 0 (without timeout)
+      requestTimeout: 0, // optional, Default: 0 (without timeout)
       pingInterval: 5000, // optional, Default: 5000
     });
   }
