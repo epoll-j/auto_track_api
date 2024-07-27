@@ -30,6 +30,5 @@ export default () => {
       secret: 'ada45a701a5011efa67f23cd587ea836',
     },
     iap: {},
-    apns: {},
   } as ModuleConfig;
 };
