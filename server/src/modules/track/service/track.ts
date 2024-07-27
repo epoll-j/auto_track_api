@@ -83,7 +83,8 @@ export class TrackService extends BaseService {
       } else {
         if (
           !user.updateTime ||
-          new Date().getTime() - user.updateTime.getTime() > 1000 * 60 * 60 * 12
+          new Date().getTime() - (user.updateTime || new Date()).getTime() >
+            1000 * 60 * 60 * 12
         ) {
           user.appVersion = app_version;
           user.deviceInfo = JSON.stringify(device_info);
