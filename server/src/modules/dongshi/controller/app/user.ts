@@ -1,4 +1,4 @@
-import { Post, Inject, Provide, Get, Body } from '@midwayjs/decorator';
+import { Post, Inject, Provide, Get, Body, Del } from '@midwayjs/decorator';
 import { Context } from '@midwayjs/koa';
 import { UserService } from '../../service/user';
 import { CoolController } from '@cool-midway/core';
@@ -45,7 +45,7 @@ export class UserController extends BaseController {
     return this._handlerServiceRes(result);
   }
 
-  @Post('/closeAccount')
+  @Del('/closeAccount')
   async closeAccount() {
     const result = await this.userService.closeAccount();
     return this._handlerServiceRes(result);
