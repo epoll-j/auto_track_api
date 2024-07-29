@@ -65,7 +65,12 @@ export class TrackService extends BaseService {
 
     let userId = null;
     if (user_id && user_id !== '') {
-      let user = await this.appService.getUser(app_key, user_id);
+      let user = await this.appService.getUser(app_key, user_id, {
+        appVersion: app_version,
+        deviceInfo: JSON.stringify(device_info),
+        ip: ip,
+        ipRegion: ipAddrArr.join(','),
+      });
 
       if (!user) {
         const newUser = new TrackUser();
@@ -77,23 +82,9 @@ export class TrackService extends BaseService {
         newUser.ipRegion = ipAddrArr.join(',');
         newUser.deviceId = device_id;
         newUser.uniqueId = unique_id;
-        user = await this.trackUserEntity.create(newUser);
+        user = await this.trackUserEntity.save(newUser);
         const nuKey = `${app_key}:nu`;
         await this.redis.incr(nuKey);
-      } else {
-        if (
-          !user.updateTime ||
-          new Date().getTime() - (user.updateTime || new Date()).getTime() >
-            1000 * 60 * 60 * 12
-        ) {
-          user.appVersion = app_version;
-          user.deviceInfo = JSON.stringify(device_info);
-          user.loginIp = ip;
-          user.ipRegion = ipAddrArr.join(',');
-          user.updateTime = new Date();
-          await this.redis.del(`${app_key}:user:${user.userId}`);
-          await this.trackUserEntity.save(user);
-        }
       }
       userId = user.id;
     }

@@ -27,7 +27,16 @@ export class AppInfoService extends BaseService {
     return appInfo;
   }
 
-  async getUser(appKey: string, userId: string) {
+  async getUser(
+    appKey: string,
+    userId: string,
+    updatObj: {
+      appVersion: string;
+      deviceInfo: string;
+      ip: string;
+      ipRegion: string;
+    } | null
+  ) {
     const key = `${appKey}:user:${userId}`;
     const result = await this.redis.get(key);
     if (!result) {
@@ -38,6 +47,14 @@ export class AppInfoService extends BaseService {
 
       if (user) {
         await this.redis.set(key, JSON.stringify(user), 'EX', 60 * 5);
+        if (updatObj) {
+          user.appVersion = updatObj.appVersion;
+          user.deviceInfo = updatObj.deviceInfo;
+          user.loginIp = updatObj.ip;
+          user.ipRegion = updatObj.ipRegion;
+          user.updateTime = new Date();
+          await this.trackUserEntity.save(user);
+        }
       }
       return user;
     } else {
@@ -45,4 +62,3 @@ export class AppInfoService extends BaseService {
     }
   }
 }
-
