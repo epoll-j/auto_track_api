@@ -89,13 +89,10 @@ export class TrackService extends BaseService {
       userId = user.id;
     }
     const dauKey = `${app_key}:dau`;
-    if ((device_id && device_id !== '') || userId) {
-      let dauId = userId;
-      if (!dauId || dauId === '') {
-        dauId = Number(
-          BigInt(`0x${device_id.replace(/-/g, '')}`) % BigInt(1000000000)
-        );
-      }
+    if (device_id && device_id !== '') {
+      let dauId = Number(
+        BigInt(`0x${device_id.replace(/-/g, '')}`) % BigInt(1000000000)
+      );
       await this.redis.setbit(dauKey, dauId, 1);
     }
 
