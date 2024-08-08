@@ -100,7 +100,6 @@ export class UserService extends BaseService {
 
     const dbUser = await this.appUserRepo.findOne({
       where: { user_id: userId },
-      select: ['id', 'user_id', 'phone', 'vip_type', 'jwt_version'],
     });
 
     if (!dbUser) {
