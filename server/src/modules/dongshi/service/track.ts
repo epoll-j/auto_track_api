@@ -22,7 +22,7 @@ export class TrackService extends BaseService {
     const { user, deviceId } = this.ctx;
 
     const userId = user ? user.user_id : '';
-    const paramString = JSON.stringify(param);
+    // const paramString = JSON.stringify(param);
 
     // 查找是否存在记录
     let track = await this.trackRepo.findOne({
@@ -38,7 +38,7 @@ export class TrackService extends BaseService {
     if (track) {
       // 如果存在，则更新
       track.last_param = track.param;
-      track.param = paramString;
+      track.param = param;
     } else {
       // 如果不存在，则创建新记录
       track = this.trackRepo.create({
@@ -46,7 +46,7 @@ export class TrackService extends BaseService {
         content_type,
         content_id,
         track_type,
-        param: paramString,
+        param: param,
         device_id: deviceId,
       });
     }
