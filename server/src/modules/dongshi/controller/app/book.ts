@@ -22,8 +22,18 @@ export class BookController extends BaseController {
   bookService: BookService;
 
   @Get('/v1/book')
-  async index(@Query('type') type: number, @Query('tag') tag: string) {
-    const result = await this.bookService.getBookList(type, tag);
+  async index(
+    @Query('type') type: number,
+    @Query('tag') tag: string,
+    @Query('page') page?: number,
+    @Query('size') size?: number
+  ) {
+    const result = await this.bookService.getBookList(
+      type,
+      tag,
+      page || 1,
+      size || 30
+    );
     return this.ok(result);
   }
 
@@ -40,8 +50,16 @@ export class BookController extends BaseController {
   }
 
   @Get('/book/search')
-  async search(@Query('keyword') keyword: string) {
-    const result = await this.bookService.searchBook(keyword);
+  async search(
+    @Query('keyword') keyword: string,
+    @Query('page') page?: number,
+    @Query('size') size?: number
+  ) {
+    const result = await this.bookService.searchBook(
+      keyword,
+      page || 1,
+      size || 30
+    );
     return this.ok(result);
   }
 }

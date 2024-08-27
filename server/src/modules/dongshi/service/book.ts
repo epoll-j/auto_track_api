@@ -31,7 +31,7 @@ export class BookService extends BaseService {
   @Inject()
   ctx;
 
-  async getBookList(type: number, tag?: string) {
+  async getBookList(type: number, tag: string, page: number, size: number) {
     const { user } = this.ctx;
     let bookList = [];
 
@@ -41,9 +41,11 @@ export class BookService extends BaseService {
         .where('book.book_status = :status', { status: 1 })
         .andWhere('JSON_CONTAINS(tags, JSON_ARRAY(:tag))', { tag })
         .orderBy('book.sort_by', 'DESC')
+        .take(size)
+        .skip((page - 1) * size)
         .getMany();
     } else {
-      const intType = parseInt(type.toString(), 10);
+      const intType = parseInt((type || 1).toString(), 10);
       if (
         [SearchType.WEEKLY_HIGHLIGHTS, SearchType.EXPLORE].includes(intType)
       ) {
@@ -54,6 +56,8 @@ export class BookService extends BaseService {
           .where('book.book_status = :status', { status: 1 })
           .andWhere('JSON_CONTAINS(tags, JSON_ARRAY(:tag))', { tag: searchTag })
           .orderBy('book.sort_by', 'DESC')
+          .take(size)
+          .skip((page - 1) * size)
           .getMany();
       } else if (
         [SearchType.CONTINUE, SearchType.SAVE_FOR_LATER].includes(intType) &&
@@ -131,7 +135,7 @@ export class BookService extends BaseService {
     return result;
   }
 
-  async searchBook(keyword: string) {
+  async searchBook(keyword: string, page: number, size: number) {
     const bookList = await this.bookRepo
       .createQueryBuilder('book')
       .where('book.book_status = :status', { status: 1 })
@@ -147,6 +151,8 @@ export class BookService extends BaseService {
         })
       )
       .orderBy('book.sort_by', 'DESC')
+      .take(size)
+      .skip((page - 1) * size)
       .getMany();
 
     const result = [];
