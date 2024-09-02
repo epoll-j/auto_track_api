@@ -41,6 +41,7 @@ export class BookService extends BaseService {
         .where('book.book_status = :status', { status: 1 })
         .andWhere('JSON_CONTAINS(tags, JSON_ARRAY(:tag))', { tag })
         .orderBy('book.sort_by', 'DESC')
+        .orderBy('book.id', 'DESC')
         .take(size)
         .skip((page - 1) * size)
         .getMany();
@@ -56,6 +57,7 @@ export class BookService extends BaseService {
           .where('book.book_status = :status', { status: 1 })
           .andWhere('JSON_CONTAINS(tags, JSON_ARRAY(:tag))', { tag: searchTag })
           .orderBy('book.sort_by', 'DESC')
+          .orderBy('book.id', 'DESC')
           .take(size)
           .skip((page - 1) * size)
           .getMany();
@@ -151,6 +153,7 @@ export class BookService extends BaseService {
         })
       )
       .orderBy('book.sort_by', 'DESC')
+      .orderBy('book.id', 'DESC')
       .take(size)
       .skip((page - 1) * size)
       .getMany();
