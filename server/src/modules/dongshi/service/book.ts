@@ -101,6 +101,13 @@ export class BookService extends BaseService {
               sort_by: 'DESC',
             },
           });
+          const idOrderMap = new Map(idList.map((id, index) => [id, index]));
+          bookList.sort((a, b) => {
+            return (
+              (idOrderMap.get(a.id) || Infinity) -
+              (idOrderMap.get(b.id) || Infinity)
+            );
+          });
         }
       }
     }
