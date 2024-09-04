@@ -102,11 +102,8 @@ export class BookService extends BaseService {
             },
           });
           const idOrderMap = new Map(idList.map((id, index) => [id, index]));
-          bookList.sort((a, b) => {
-            return (
-              (idOrderMap.get(a.id) || Infinity) -
-              (idOrderMap.get(b.id) || Infinity)
-            );
+          bookList = bookList.sort((a, b) => {
+            return idOrderMap.get(String(a.id)) - idOrderMap.get(String(b.id));
           });
         }
       }
