@@ -77,6 +77,7 @@ export class BaseSysParamService extends BaseService {
       throw new CoolCommException('存在相同的keyName');
     }
     await super.addOrUpdate(param, type);
+    this.modifyAfter();
   }
 
   /**
