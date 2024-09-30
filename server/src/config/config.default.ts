@@ -11,6 +11,9 @@ export default {
   koa: {
     port: 8001,
   },
+  cors: {
+    origin: '*',
+  },
   // 模板渲染
   view: {
     mapping: {
