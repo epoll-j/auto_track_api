@@ -11,11 +11,11 @@ export class TrackInfo {
   @Column('varchar', { name: 'app_key', length: 200 })
   appKey: string;
 
-  @Column('varchar', { name: 'unique_id', length: 255 })
-  uniqueId: string;
+  @Column('varchar', { name: 'unique_id', nullable: true, length: 255 })
+  uniqueId: string | null;
 
-  @Column('varchar', { name: 'device_id', length: 255 })
-  deviceId: string;
+  @Column('varchar', { name: 'device_id', nullable: true, length: 255 })
+  deviceId: string | null;
 
   @Column('varchar', { name: 'user_id', nullable: true, length: 200 })
   userId: string | null;

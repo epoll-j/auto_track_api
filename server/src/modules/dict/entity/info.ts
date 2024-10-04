@@ -12,7 +12,7 @@ export class DictInfoEntity extends BaseEntity {
   @Column({ comment: '名称' })
   name: string;
 
-  @Column({ comment: '值', nullable: true })
+  @Column({ type: 'longtext', comment: '值', nullable: true })
   value: string;
 
   @Column({ comment: '排序', default: 0 })

@@ -1,5 +1,5 @@
 import { ModuleConfig } from '@cool-midway/core';
-import { UserMiddleware } from './middleware/app';
+import { AuthMiddleware } from './middleware/auth';
 
 /**
  * 模块配置
@@ -7,16 +7,15 @@ import { UserMiddleware } from './middleware/app';
 export default () => {
   return {
     // 模块名称
-    name: '用户模块',
+    name: '洞识APP',
     // 模块描述
-    description: 'APP、小程序、公众号等用户',
+    description: 'api服务',
     // 中间件，只对本模块有效
     middlewares: [],
     // 中间件，全局有效
-    globalMiddlewares: [UserMiddleware],
+    globalMiddlewares: [AuthMiddleware],
     // 模块加载顺序，默认为0，值越大越优先加载
     order: 0,
-    // 短信
     sms: {
       // 验证码有效期，单位秒
       timeout: 60 * 3,
@@ -30,5 +29,6 @@ export default () => {
       // jwt 秘钥
       secret: 'ada45a701a5011efa67f23cd587ea836',
     },
+    iap: {},
   } as ModuleConfig;
 };

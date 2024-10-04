@@ -7,7 +7,7 @@ import { join } from 'path';
 import * as view from '@midwayjs/view-ejs';
 import * as staticFile from '@midwayjs/static-file';
 import * as cron from '@midwayjs/cron';
-// import * as crossDomain from '@midwayjs/cross-domain';
+import * as crossDomain from '@midwayjs/cross-domain';
 import * as cool from '@cool-midway/core';
 import { ILogger } from '@midwayjs/logger';
 import * as upload from '@midwayjs/upload';
@@ -22,7 +22,7 @@ import * as task from '@cool-midway/task';
     // https://koajs.com/
     koa,
     // 是否开启跨域(注：顺序不能乱放！！！) http://www.midwayjs.org/docs/extensions/cross_domain
-    // crossDomain,
+    crossDomain,
     // 模板渲染 https://midwayjs.org/docs/extensions/render
     view,
     // 静态文件托管 https://midwayjs.org/docs/extensions/static_file

@@ -65,7 +65,12 @@ export class TrackService extends BaseService {
 
     let userId = null;
     if (user_id && user_id !== '') {
-      let user = await this.appService.getUser(app_key, user_id);
+      let user = await this.appService.getUser(app_key, user_id, {
+        appVersion: app_version,
+        deviceInfo: JSON.stringify(device_info),
+        ip: ip,
+        ipRegion: ipAddrArr.join(','),
+      });
 
       if (!user) {
         const newUser = new TrackUser();
@@ -80,29 +85,14 @@ export class TrackService extends BaseService {
         user = await this.trackUserEntity.save(newUser);
         const nuKey = `${app_key}:nu`;
         await this.redis.incr(nuKey);
-      } else {
-        if (
-          new Date().getTime() - user.updateTime.getTime() >
-          1000 * 60 * 60 * 12
-        ) {
-          user.appVersion = app_version;
-          user.deviceInfo = JSON.stringify(device_info);
-          user.loginIp = ip;
-          user.ipRegion = ipAddrArr.join(',');
-
-          await this.trackUserEntity.save(user);
-        }
       }
       userId = user.id;
     }
     const dauKey = `${app_key}:dau`;
-    if ((device_id && device_id !== '') || userId) {
-      let dauId = userId;
-      if (!dauId || dauId === '') {
-        dauId = Number(
-          BigInt(`0x${device_id.replace(/-/g, '')}`) % BigInt(1000000000)
-        );
-      }
+    if (device_id && device_id !== '') {
+      let dauId = Number(
+        BigInt(`0x${device_id.replace(/-/g, '')}`) % BigInt(1000000000)
+      );
       await this.redis.setbit(dauKey, dauId, 1);
     }
 
