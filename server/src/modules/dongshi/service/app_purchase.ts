@@ -10,6 +10,8 @@ import {
   AppStoreServerAPIClient,
   Environment,
 } from '@apple/app-store-server-library';
+import { RedisService } from '@midwayjs/redis';
+import * as moment from 'moment';
 
 @Provide()
 export class PurchaseService {
@@ -27,6 +29,9 @@ export class PurchaseService {
 
   @Inject()
   userService: UserService;
+
+  @Inject()
+  redis: RedisService;
 
   @Config('module.dongshi.iap')
   iapConfig;
@@ -153,6 +158,21 @@ export class PurchaseService {
           userId,
           payload.productId
         );
+      }
+      try {
+        if (
+          payload.transactionReason === 'PURCHASE' &&
+          ['iap_subscribe_year_free', 'iap_subscribe_year_free_198'].includes(
+            payload.productId
+          )
+        ) {
+          await this.redis.sadd(
+            `iap_notice#${moment().add(5, 'days').format('YYYY-MM-DD')}`,
+            userId
+          );
+        }
+      } catch (err) {
+        console.log('设置推送失败：', err);
       }
       return {
         code: 1,

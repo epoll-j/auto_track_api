@@ -1,6 +1,6 @@
 import { Config, Init, Inject, Provide } from '@midwayjs/decorator';
 import { InjectEntityModel } from '@midwayjs/typeorm';
-import { Repository, Not, IsNull } from 'typeorm';
+import { Repository, Not, IsNull, In } from 'typeorm';
 import { Context } from '@midwayjs/koa';
 import { ApnsClient, Host, Notification } from 'apns2';
 import { ApnsToken } from '../entity/apns_token';
@@ -37,9 +37,13 @@ export class ApnsService {
         code: 1,
       };
     }
+    let param = userId;
+    if (Array.isArray(userId)) {
+      param = In(userId);
+    }
 
     try {
-      const token = await this.apnsTokenRepo.findBy({ user_id: userId });
+      const token = await this.apnsTokenRepo.findBy({ user_id: param });
       const notifications = token.map(
         item => new Notification(item.device_token, body)
       );
