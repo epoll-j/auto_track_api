@@ -28,7 +28,7 @@ export default {
     },
   },
   cool: {
-    eps: true,
+    // 是否自动导入数据库，生产环境不建议开，用本地的数据库手动初始化
     initDB: false,
   } as CoolConfig,
 } as MidwayConfig;
