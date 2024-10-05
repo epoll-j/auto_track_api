@@ -1,10 +1,12 @@
-import { Logger, Provide } from '@midwayjs/decorator';
+import { Inject, Logger, Provide } from '@midwayjs/decorator';
 import { BaseService } from '@cool-midway/core';
 import * as moment from 'moment';
 import { LessThan, Not, Repository } from 'typeorm';
 import { AppUser } from '../entity/app_user';
 import { Track } from '../entity/track';
 import { InjectEntityModel } from '@midwayjs/typeorm';
+import { RedisService } from '@midwayjs/redis';
+import { ApnsService } from './apns';
 
 /**
  * 描述
@@ -16,6 +18,12 @@ export class VipTaskService extends BaseService {
 
   @InjectEntityModel(AppUser)
   userRepo: Repository<AppUser>;
+
+  @Inject()
+  apnsService: ApnsService;
+
+  @Inject()
+  redis: RedisService;
 
   async checkTime() {
     const content_id = moment().format('YYYY-MM-DD');
@@ -44,5 +52,24 @@ export class VipTaskService extends BaseService {
       await this.trackRepo.save(track);
     }
     return '会员状态更新任务执行完成';
+  }
+
+  async pushRenewApns() {
+    const key = `iap_notice#${moment().format('YYYY-MM-DD')}`;
+    const userIdList = await this.redis.smembers(key);
+    if (userIdList && userIdList.length != 0) {
+      await this.apnsService.send(userIdList, {
+        alert: {
+          body: '2天后即将成为正式会员',
+          title: '🔔订阅提醒',
+          subTitle: '',
+        },
+        category: 'mutable',
+        attachmentUrl: '',
+        mutableContent: true,
+      });
+    }
+    await this.redis.del(key);
+    return `会员订阅提醒通知【${userIdList}】`;
   }
 }
