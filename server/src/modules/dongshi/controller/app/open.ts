@@ -32,7 +32,7 @@ export class UserController extends BaseController {
         );
       }
     }
-    if (this.ctx.headers['APP_VERSION'] === '1.3.1') {
+    if (this.ctx.headers['app_version'] === '1.3.1') {
       return this.ok(
         _.merge(basic, {
           products: [
