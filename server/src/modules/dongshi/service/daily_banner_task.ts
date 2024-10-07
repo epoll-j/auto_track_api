@@ -34,7 +34,10 @@ export class DailyBannerTaskService extends BaseService {
       return '暂无替换列表';
     }
     const dailyBanner = dailyList[0];
+    const freeBook = await this.bookRepo.findOneBy({ is_free: 1 });
+    await this.bookRepo.update({ id: freeBook.id }, { is_free: 0 });
     const book = await this.bookRepo.findOneBy({ id: dailyBanner.book_id });
+    await this.bookRepo.update({ id: book.id }, { is_free: 1 });
     const banner = new Banner();
     banner.param = {
       type: 2,

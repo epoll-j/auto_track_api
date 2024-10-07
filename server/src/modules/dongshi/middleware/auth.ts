@@ -39,6 +39,7 @@ export class AuthMiddleware implements IMiddleware<Context, NextFunction> {
               .digest('hex');
             if (verifiedSignature === signature) {
               ctx.deviceId = deviceId;
+              ctx.abGroup = this.getABGroup(deviceId, 3);
             }
           }
         }
@@ -46,5 +47,11 @@ export class AuthMiddleware implements IMiddleware<Context, NextFunction> {
 
       await next();
     };
+  }
+
+  getABGroup(deviceId, numGroups) {
+    const hash = crypto.createHash('sha256').update(deviceId).digest('hex');
+    const groupIndex = parseInt(hash, 16) % numGroups;
+    return groupIndex; // 返回组索引（0 到 n-1）
   }
 }

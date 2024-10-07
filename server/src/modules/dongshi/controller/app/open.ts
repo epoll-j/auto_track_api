@@ -32,30 +32,30 @@ export class UserController extends BaseController {
         );
       }
     }
-    if (this.ctx.headers['app_version'] === '1.3.1') {
-      return this.ok(
-        _.merge(basic, {
-          products: [
-            {
-              product_id: 'iap_subscribe_year_free_198',
-              product_name: '年度订阅',
-              product_price: '198',
-              product_original_price: '298',
-              discount_image: 'assets/images/discount-first-month.png',
-              product_slogan: '2杯奶茶的价格',
-            },
-            {
-              product_id: 'iap_subscribe_year_free',
-              product_name: '年度订阅',
-              product_price: '298',
-              product_original_price: '',
-              discount_image: 'assets/images/discount-most.png',
-              product_slogan: '比月会员省86元',
-            },
-          ],
-        })
-      );
-    }
+    // if (this.ctx.headers['app_version'] === '1.3.1') {
+    //   return this.ok(
+    //     _.merge(basic, {
+    //       products: [
+    //         {
+    //           product_id: 'iap_subscribe_year_free_198',
+    //           product_name: '年度订阅',
+    //           product_price: '198',
+    //           product_original_price: '298',
+    //           discount_image: 'assets/images/discount-first-month.png',
+    //           product_slogan: '2杯奶茶的价格',
+    //         },
+    //         {
+    //           product_id: 'iap_subscribe_year_free',
+    //           product_name: '年度订阅',
+    //           product_price: '298',
+    //           product_original_price: '',
+    //           discount_image: 'assets/images/discount-most.png',
+    //           product_slogan: '比月会员省86元',
+    //         },
+    //       ],
+    //     })
+    //   );
+    // }
     return this.ok(_.merge(basic, mergeConfig));
   }
 
