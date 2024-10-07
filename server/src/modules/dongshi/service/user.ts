@@ -48,12 +48,29 @@ export class UserService extends BaseService {
     });
 
     if (!dbUser) {
-      const newUser = this.appUserRepo.create({
+      let newDb = {
         user_id: uuidv4().replace(/-/g, ''),
-        phone,
         jwt_version: 0,
-        expiration_time: moment(new Date()).add(7, 'days').toDate(),
-      });
+        phone,
+        vip_type: 0,
+        expiration_time: null,
+      };
+      if (!this.ctx.abGroup || this.ctx.abGroup === 0) {
+        newDb = {
+          user_id: uuidv4().replace(/-/g, ''),
+          jwt_version: 0,
+          phone,
+          vip_type: 1,
+          expiration_time: moment(new Date()).add(7, 'days').toDate(),
+        };
+      }
+      // {
+      //   user_id: uuidv4().replace(/-/g, ''),
+      //   phone,
+      //   jwt_version: 0,
+      //   expiration_time: moment(new Date()).add(7, 'days').toDate(),
+      // }
+      const newUser = this.appUserRepo.create(newDb);
 
       const savedUser = await this.appUserRepo.save(newUser);
       dbUser = await this.appUserRepo.findOne({
