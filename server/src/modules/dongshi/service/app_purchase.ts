@@ -97,7 +97,9 @@ export class PurchaseService {
         await this.userService.updateVIPStatus(
           transactionId,
           userId,
-          purchase.product_id
+          purchase.product_id,
+          0,
+          purchase
         );
       }
       return {
@@ -153,10 +155,16 @@ export class PurchaseService {
       await this.appPurchaseRepo.save(newPurchase);
       // 恢复购买
       if (!oldPurchase) {
+        let trialDays = null;
+        if (payload.offerDiscountType === 'FREE_TRIAL') {
+          trialDays = 7;
+        }
         await this.userService.updateVIPStatus(
           transactionId,
           userId,
-          payload.productId
+          payload.productId,
+          trialDays,
+          newPurchase
         );
       }
       try {
