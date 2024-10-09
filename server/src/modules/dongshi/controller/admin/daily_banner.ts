@@ -15,7 +15,7 @@ import { DailyBanner } from '../../entity/daily_banner';
       id: 'asc',
     },
     where: async ctx => {
-      return [['finish = 0']];
+      return [['finish =:finish', { finish: 0 }]];
     },
   },
 })

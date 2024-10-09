@@ -20,7 +20,7 @@ export class BookController extends BaseController {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer sk-959a73f8ae9d43a7a7b8c4755db7def3',
+          Authorization: 'Bearer',
         },
       }
     );
