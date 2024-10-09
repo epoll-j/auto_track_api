@@ -60,8 +60,9 @@ export class ApnsService {
       const token = await this.apnsTokenRepo.find({
         where: { user_id: Not(IsNull()) },
       });
-      const notifications = token.map(
-        item => new Notification(item.device_token, body)
+      const uniqueTokens = [...new Set(token.map(item => item.device_token))];
+      const notifications = uniqueTokens.map(
+        item => new Notification(item, body)
       );
       console.log(await this.apnsClient.sendMany(notifications));
     } catch (err) {

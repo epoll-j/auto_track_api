@@ -54,14 +54,14 @@ const Upsert = useUpsert({
 			prop: "apns_body",
 			component: { name: "el-input", props: { type: "textarea", rows: 4 } },
 			required: true
+		},
+		{
+			label: "排序字段",
+			prop: "sort_by",
+			hook: "number",
+			component: { name: "el-input-number" },
+			// required: true
 		}
-		// {
-		// 	label: "排序字段",
-		// 	prop: "sort_by",
-		// 	hook: "number",
-		// 	component: { name: "el-input-number" },
-		// 	required: true
-		// }
 	]
 });
 
@@ -72,21 +72,21 @@ const Table = useTable({
 		{ label: "书本ID", prop: "book_id", minWidth: 140 },
 		{ label: "推送标题", prop: "apns_title", minWidth: 140 },
 		{ label: "推送内容", prop: "apns_body", showOverflowTooltip: true, minWidth: 200 },
-		// { label: "排序字段", prop: "sort_by", minWidth: 140 },
-		{
-			label: "创建时间",
-			prop: "create_time",
-			minWidth: 170,
-			sortable: "custom",
-			component: { name: "cl-date-text" }
-		},
-		{
-			label: "更新时间",
-			prop: "update_time",
-			minWidth: 170,
-			sortable: "custom",
-			component: { name: "cl-date-text" }
-		},
+		{ label: "排序字段", prop: "sort_by", minWidth: 140 },
+		// {
+		// 	label: "创建时间",
+		// 	prop: "create_time",
+		// 	minWidth: 170,
+		// 	sortable: "custom",
+		// 	component: { name: "cl-date-text" }
+		// },
+		// {
+		// 	label: "更新时间",
+		// 	prop: "update_time",
+		// 	minWidth: 170,
+		// 	sortable: "custom",
+		// 	component: { name: "cl-date-text" }
+		// },
 		{ type: "op", buttons: ["edit", "delete"] }
 	]
 });
