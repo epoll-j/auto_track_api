@@ -10,6 +10,7 @@ import { ApnsToken } from '../entity/apns_token';
 import { Track } from '../entity/track';
 import { BaseService } from '@cool-midway/core';
 import { Context } from 'koa';
+import { AppPurchase } from '../entity/app_purchase';
 
 @Provide()
 export class UserService extends BaseService {
@@ -239,7 +240,9 @@ export class UserService extends BaseService {
   async updateVIPStatus(
     transactionId: string,
     userId: string,
-    productId: string
+    productId: string,
+    trialDays: number,
+    purchase: AppPurchase
   ) {
     await this.appUserRepo.manager.transaction(
       async transactionalEntityManager => {
@@ -249,13 +252,20 @@ export class UserService extends BaseService {
 
         const exp = user.expiration_time;
         if (!user.expiration_time) {
-          user.expiration_time = new Date();
+          user.expiration_time = purchase.expires_date;
+        } else {
+          if (trialDays) {
+            user.expiration_time = moment(user.expiration_time)
+              .add(trialDays, 'days')
+              .toDate();
+          } else {
+            user.expiration_time = moment(user.expiration_time)
+              .add(productId === 'iap_subscribe_month' ? 1 : 12, 'months')
+              .toDate();
+          }
         }
 
-        user.expiration_time = moment(user.expiration_time)
-          .add(productId === 'iap_subscribe_month' ? 1 : 12, 'months')
-          .toDate();
-        user.vip_type = 2;
+        user.vip_type = trialDays === 0 ? 2 : 1;
 
         await transactionalEntityManager.save(user);
 

@@ -8,6 +8,7 @@ import * as moment from 'moment';
 import { Utils } from '../../../../comm/utils';
 import { BaseSysConfService } from './conf';
 import { Context } from '@midwayjs/koa';
+import { TrackInfo } from '../../../track/entity/track_info';
 
 /**
  * 描述
@@ -22,6 +23,9 @@ export class BaseSysLogService extends BaseService {
 
   @InjectEntityModel(BaseSysLogEntity)
   baseSysLogEntity: Repository<BaseSysLogEntity>;
+
+  @InjectEntityModel(TrackInfo)
+  trackInfoEntity: Repository<TrackInfo>;
 
   @Inject()
   baseSysConfService: BaseSysConfService;
@@ -61,6 +65,7 @@ export class BaseSysLogService extends BaseService {
     if (keepDay) {
       const beforeDate = moment().add(-keepDay, 'days').startOf('day').toDate();
       await this.baseSysLogEntity.delete({ createTime: LessThan(beforeDate) });
+      await this.trackInfoEntity.delete({ createTime: LessThan(beforeDate) });
     } else {
       await this.baseSysLogEntity.clear();
     }

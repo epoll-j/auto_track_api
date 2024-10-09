@@ -12,6 +12,10 @@ import { DailyBanner } from '../../entity/daily_banner';
   pageQueryOp: {
     addOrderBy: {
       sort_by: 'desc',
+      id: 'asc',
+    },
+    where: async ctx => {
+      return [['finish =:finish', { finish: 0 }]];
     },
   },
 })
