@@ -31,7 +31,13 @@ export class BookService extends BaseService {
   @Inject()
   ctx;
 
-  async getBookList(type: number, tag: string, page: number, size: number) {
+  async getBookList(
+    type: number,
+    tag: string,
+    page: number,
+    size: number,
+    ids: Array<Number>
+  ) {
     const { user } = this.ctx;
     let bookList = [];
 
@@ -45,6 +51,8 @@ export class BookService extends BaseService {
         .take(size)
         .skip((page - 1) * size)
         .getMany();
+    } else if (ids && ids.length != 0) {
+      bookList = await this.bookRepo.findBy({ id: In(ids) });
     } else {
       const intType = parseInt((type || 1).toString(), 10);
       if (

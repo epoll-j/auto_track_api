@@ -151,6 +151,7 @@ export class PurchaseService {
         purchase_environment: payload.environment,
         purchase_price: payload.price,
         purchase_currency: payload.currency,
+        transaction_status: oldPurchase ? 1 : 0,
       });
       await this.appPurchaseRepo.save(newPurchase);
       // 恢复购买
