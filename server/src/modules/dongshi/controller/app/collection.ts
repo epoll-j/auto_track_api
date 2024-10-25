@@ -13,8 +13,11 @@ export class CollectionController extends BaseController {
   @Inject()
   collectionService: CollectionService;
 
-  @Get('/collection')
-  async getBanner(@Query('page') page?: number, @Query('size') size?: number) {
+  @Get('/collection/list')
+  async getCollection(
+    @Query('page') page?: number,
+    @Query('size') size?: number
+  ) {
     return this.ok(await this.collectionService.getList(page || 1, size || 5));
   }
 }
