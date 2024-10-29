@@ -91,17 +91,14 @@ export class TrackService extends BaseService {
             const keyPointCount = await this.keyPointRepo.countBy({
               book_id: content_id,
             });
-            if (
-              bookIndex / keyPointCount >
-              userChallenge.challenge_progress[index]
-            ) {
-              userChallenge.challenge_progress[index] =
-                bookIndex / keyPointCount;
+            const currentProgress = Math.min(bookIndex / keyPointCount, 1);
+            if (currentProgress > userChallenge.challenge_progress[index]) {
+              userChallenge.challenge_progress[index] = currentProgress;
               // 阅读第一本开始挑战
               if (userChallenge.challenge_progress[0] > 0) {
                 userChallenge.status = 0;
               }
-              if (bookIndex / keyPointCount === 1) {
+              if (currentProgress === 1) {
                 if (index === 0) {
                   userChallenge.daily_finish = 1;
                 } else {
