@@ -1,6 +1,6 @@
 import { Provide, Inject } from '@midwayjs/decorator';
 import { InjectEntityModel } from '@midwayjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, LessThan, Repository } from 'typeorm';
 import { Context } from '@midwayjs/koa';
 import { BaseService } from '@cool-midway/core';
 
@@ -35,7 +35,7 @@ export class ChallengeService extends BaseService {
       where: {
         status: 1,
       },
-      select: ['id', 'title', 'cover', 'color'],
+      select: ['id', 'title', 'cover', 'color', 'icon'],
       order: {
         sort_by: 'DESC',
         id: 'DESC',
@@ -56,6 +56,7 @@ export class ChallengeService extends BaseService {
         'title',
         'color',
         'cover',
+        'icon',
         'book_ids',
         'trophy_imgs',
         'boost',
@@ -81,7 +82,7 @@ export class ChallengeService extends BaseService {
     bookList.sort((obj1, obj2) => {
       return indexMap[obj1.id] - indexMap[obj2.id];
     });
-    // challenge.book_list = bookList;
+
     if (!user) {
       return {
         ...challenge,
@@ -94,7 +95,7 @@ export class ChallengeService extends BaseService {
         user_id: user.user_id,
         challenge_id: id,
       },
-      select: ['status', 'challenge_progress'],
+      select: ['status', 'challenge_progress', 'daily_finish'],
     });
 
     if (!userChallenge) {
@@ -127,5 +128,47 @@ export class ChallengeService extends BaseService {
       book_list: bookList,
       progress: userChallenge,
     };
+  }
+
+  async getChallengeProgress() {
+    const { user } = this.ctx;
+    if (!user || !user.user_id) {
+      return [];
+    }
+
+    const userChallenge = await this.userChallengeRepo.find({
+      where: {
+        user_id: user.user_id,
+        status: 0,
+      },
+      select: ['challenge_id', 'status', 'challenge_progress', 'daily_finish'],
+    });
+
+    if (!userChallenge || userChallenge.length === 0) {
+      return [];
+    }
+
+    const challenge = await this.challengeRepo.find({
+      where: {
+        id: In(userChallenge.map(item => item.challenge_id)),
+        status: 1,
+      },
+      select: ['id', 'title', 'icon', 'cover', 'color'],
+    });
+
+    const result = [];
+    for (const item of userChallenge) {
+      const index = challenge.findIndex(
+        challengeItem => challengeItem.id === item.challenge_id
+      );
+      if (index !== -1) {
+        result.push({
+          ...challenge[index],
+          progress: item,
+        });
+      }
+    }
+
+    return result;
   }
 }

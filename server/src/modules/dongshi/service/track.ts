@@ -8,6 +8,7 @@ import { AppUser } from '../entity/app_user';
 import { Challenge } from '../entity/challenge';
 import { UserChallenge } from '../entity/user_challenge';
 import { KeyPoint } from '../entity/key_point';
+import { RedisService } from '@midwayjs/redis';
 
 @Provide()
 export class TrackService extends BaseService {
@@ -25,6 +26,9 @@ export class TrackService extends BaseService {
 
   @InjectEntityModel(KeyPoint)
   keyPointRepo: Repository<KeyPoint>;
+
+  @Inject()
+  redis: RedisService;
 
   @Inject()
   ctx: Context;
@@ -93,8 +97,18 @@ export class TrackService extends BaseService {
             ) {
               userChallenge.challenge_progress[index] =
                 bookIndex / keyPointCount;
+              // 阅读第一本开始挑战
               if (userChallenge.challenge_progress[0] > 0) {
                 userChallenge.status = 0;
+              }
+              if (bookIndex / keyPointCount === 1) {
+                if (index === 0) {
+                  userChallenge.daily_finish = 1;
+                } else {
+                  if (userChallenge.challenge_progress[index - 1] >= 1) {
+                    userChallenge.daily_finish = 1;
+                  }
+                }
               }
               const progress =
                 userChallenge.challenge_progress.reduce((pre, cur) => {

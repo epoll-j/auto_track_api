@@ -7,6 +7,7 @@ import { Track } from '../entity/track';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { RedisService } from '@midwayjs/redis';
 import { ApnsService } from './apns';
+import { UserChallenge } from '../entity/user_challenge';
 
 /**
  * 描述
@@ -18,6 +19,9 @@ export class VipTaskService extends BaseService {
 
   @InjectEntityModel(AppUser)
   userRepo: Repository<AppUser>;
+
+  @InjectEntityModel(UserChallenge)
+  userChallengeRepo: Repository<UserChallenge>;
 
   @Inject()
   apnsService: ApnsService;
@@ -51,6 +55,13 @@ export class VipTaskService extends BaseService {
 
       await this.trackRepo.save(track);
     }
+
+    await this.userChallengeRepo
+      .createQueryBuilder()
+      .update(UserChallenge)
+      .set({ daily_finish: 0 })
+      .execute();
+
     return '会员状态更新任务执行完成';
   }
 

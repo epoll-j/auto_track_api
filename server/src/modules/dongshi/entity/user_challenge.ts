@@ -19,7 +19,10 @@ import {
   
     @Column('json', { name: 'challenge_progress' })
     challenge_progress: number[];
-  
+    
+    @Column('int', { name: 'daily_finish', default: () => "'0'" })
+    daily_finish: number;
+
     @Column('int', { name: 'status', default: () => "'-1'" })
     status: number;
   

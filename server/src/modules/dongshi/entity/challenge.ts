@@ -14,8 +14,11 @@ import {
     @Column('varchar', { name: 'title', length: 256 })
     title: string;
   
-    @Column('varchar', { name: 'cover', length: 256 })
+    @Column('varchar', { name: 'cover', length: 1024 })
     cover: string;
+
+    @Column('varchar', { name: 'icon', length: 1024 })
+    icon: string;
   
     @Column('varchar', { name: 'color', length: 256 })
     color: string;
