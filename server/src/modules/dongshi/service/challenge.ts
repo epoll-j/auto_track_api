@@ -114,7 +114,7 @@ export class ChallengeService extends BaseService {
         if (!track) {
           progress.push(0);
         } else {
-          progress.push((track.param.index + 1) / book.key_point.length);
+          progress.push(Math.min(track.param.index / book.key_point.length, 1));
         }
       }
       if (progress[0] > 0) {
