@@ -113,7 +113,10 @@ export class TrackService extends BaseService {
                 }) / challenge.book_ids.length;
               if (progress >= 1) {
                 // 完成挑战
-                userChallenge.status = 1;
+                await this.redis.sadd(
+                  'user_challenge_finish',
+                  userChallenge.id
+                );
               }
               userChallenge.update_time = null;
               await this.userChallengeRepo.save(userChallenge);

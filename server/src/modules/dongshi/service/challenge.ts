@@ -45,7 +45,7 @@ export class ChallengeService extends BaseService {
     });
   }
 
-  async getChallengeInfo(id: number) {
+  async getChallengeInfo(id: number, start = 0) {
     const { user } = this.ctx;
     const challenge = await this.challengeRepo.findOne({
       where: {
@@ -98,7 +98,7 @@ export class ChallengeService extends BaseService {
       select: ['status', 'challenge_progress', 'daily_finish'],
     });
 
-    if (!userChallenge) {
+    if (!userChallenge && start === 1) {
       userChallenge = new UserChallenge();
       userChallenge.user_id = user.user_id;
       userChallenge.challenge_id = id;
@@ -114,11 +114,13 @@ export class ChallengeService extends BaseService {
         if (!track) {
           progress.push(0);
         } else {
-          progress.push((track.param.index + 1) / book.key_point.length);
+          progress.push(Math.min(track.param.index / book.key_point.length, 1));
         }
       }
       if (progress[0] > 0) {
         userChallenge.status = 0;
+      } else if (progress.reduce((pre, cur) => pre + cur) >= bookList.length) {
+        userChallenge.status = 1;
       }
       await this.userChallengeRepo.save(userChallenge);
     }
@@ -139,7 +141,7 @@ export class ChallengeService extends BaseService {
     const userChallenge = await this.userChallengeRepo.find({
       where: {
         user_id: user.user_id,
-        status: 0,
+        status: LessThan(1),
       },
       select: ['challenge_id', 'status', 'challenge_progress', 'daily_finish'],
     });

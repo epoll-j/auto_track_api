@@ -21,8 +21,13 @@ export class ChallengeController extends BaseController {
   }
 
   @Get('/challenge/info')
-  async getChallengeInfo(@Query('id') id: number) {
-    return this.ok(await this.challengeService.getChallengeInfo(id));
+  async getChallengeInfo(
+    @Query('id') id: number,
+    @Query('start') start?: number
+  ) {
+    return this.ok(
+      await this.challengeService.getChallengeInfo(id, start || 0)
+    );
   }
 
   @Get('/challenge/progress')

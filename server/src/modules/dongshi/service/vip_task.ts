@@ -1,7 +1,7 @@
 import { Inject, Logger, Provide } from '@midwayjs/decorator';
 import { BaseService } from '@cool-midway/core';
 import * as moment from 'moment';
-import { LessThan, Not, Repository } from 'typeorm';
+import { In, LessThan, Not, Repository } from 'typeorm';
 import { AppUser } from '../entity/app_user';
 import { Track } from '../entity/track';
 import { InjectEntityModel } from '@midwayjs/typeorm';
@@ -55,6 +55,13 @@ export class VipTaskService extends BaseService {
 
       await this.trackRepo.save(track);
     }
+
+    const finishIdList = await this.redis.smembers('user_challenge_finish');
+    await this.redis.del('user_challenge_finish');
+    await this.userChallengeRepo.update(
+      { id: In(finishIdList.map(item => Number(item))) },
+      { status: 1 }
+    );
 
     await this.userChallengeRepo
       .createQueryBuilder()
