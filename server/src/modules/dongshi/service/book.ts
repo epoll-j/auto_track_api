@@ -12,6 +12,7 @@ const SearchType = {
   EXPLORE: 1,
   CONTINUE: 2,
   SAVE_FOR_LATER: 3,
+  FINISH_READING: 4,
 };
 
 @Provide()
@@ -70,23 +71,30 @@ export class BookService extends BaseService {
           .skip((page - 1) * size)
           .getMany();
       } else if (
-        [SearchType.CONTINUE, SearchType.SAVE_FOR_LATER].includes(intType) &&
+        [
+          SearchType.CONTINUE,
+          SearchType.SAVE_FOR_LATER,
+          SearchType.FINISH_READING,
+        ].includes(intType) &&
         user
       ) {
         const userId = user.user_id;
         let trackList = [];
-        if (intType === SearchType.CONTINUE) {
-          trackList = await this.trackRepo.find({
-            where: {
-              user_id: userId,
-              content_type: 0,
-              track_type: 0,
-            },
-            order: {
-              update_time: 'DESC',
-            },
-            take: 15,
-          });
+        if (
+          intType === SearchType.CONTINUE ||
+          intType === SearchType.FINISH_READING
+        ) {
+          trackList = await this.trackRepo
+            .createQueryBuilder('track')
+            .where('track.user_id = :userId', { userId: userId })
+            .andWhere('track.content_type = :contentType', { contentType: 0 })
+            .andWhere('track.track_type = :trackType', { trackType: 0 })
+            .andWhere('JSON_VALUE(track.param, "$.finish")', {
+              finish: intType === SearchType.CONTINUE ? 0 : 1,
+            })
+            .orderBy('track.update_time', 'DESC')
+            .take(20)
+            .getMany();
         } else {
           trackList = await this.trackRepo
             .createQueryBuilder('track')
@@ -95,7 +103,7 @@ export class BookService extends BaseService {
             .andWhere('track.track_type = :trackType', { trackType: 1 })
             .andWhere('JSON_VALUE(track.param, "$.late") = 1')
             .orderBy('track.update_time', 'DESC')
-            .take(15)
+            .take(20)
             .getMany();
         }
         const idList = trackList.map(t => t.content_id);
