@@ -194,7 +194,7 @@ export class BookService extends BaseService {
         update_time: 'DESC',
       },
       select: ['content_id'],
-      take: 5,
+      take: 10,
     });
 
     if (trackList.length <= 0) {
