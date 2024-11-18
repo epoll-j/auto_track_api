@@ -1,16 +1,21 @@
-import { Config, Provide } from '@midwayjs/decorator';
+import { Config, Inject, Provide } from '@midwayjs/decorator';
 import { BaseService } from '@cool-midway/core';
 import { IsNull, Repository } from 'typeorm';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Book } from '../entity/book';
 import axios from 'axios';
-/**
- * 描述
- */
+import { Track } from '../entity/track';
+import { RedisService } from '@midwayjs/redis';
+import { TfIdf } from 'natural';
+
 @Provide()
 export class BookTagsTaskService extends BaseService {
   @InjectEntityModel(Book)
   bookRepo: Repository<Book>;
+  @InjectEntityModel(Track)
+  trackRepo: Repository<Track>;
+  @Inject()
+  redis: RedisService;
   @Config('module.dongshi.tyqw')
   apiKey: string;
 
@@ -64,5 +69,42 @@ export class BookTagsTaskService extends BaseService {
     }
 
     return '设置标签成功';
+  }
+
+  async setRecommendations() {
+    const bookList = await this.bookRepo.findBy({ book_status: 1 });
+    const recommendations = [];
+    const tfidf = new TfIdf();
+    for (const book of bookList) {
+      const trackList = await this.trackRepo.findBy({
+        track_type: 0,
+        content_type: 0,
+        content_id: `${book.id}`,
+      });
+
+      if (!book.recommend_tags || book.recommend_tags.length === 0) {
+        continue;
+      }
+
+      let finishCount = 0;
+      for (const track of trackList) {
+        if (track.param && track.param.finish === 1) {
+          finishCount++;
+        }
+      }
+
+      recommendations.push({
+        id: book.id,
+        title: book.title,
+        tags: book.recommend_tags,
+        completion_rate: finishCount / trackList.length || 0,
+      });
+    }
+
+    await this.redis.set(
+      'book:recommendations',
+      JSON.stringify(recommendations)
+    );
+    return '设置推荐列表';
   }
 }

@@ -6,6 +6,8 @@ import { Book } from '../entity/book';
 import { KeyPoint } from '../entity/key_point';
 import { Track } from '../entity/track';
 import { AppUser } from '../entity/app_user';
+import { TfIdf } from 'natural';
+import { RedisService } from '@midwayjs/redis';
 
 const SearchType = {
   WEEKLY_HIGHLIGHTS: 0,
@@ -30,6 +32,9 @@ export class BookService extends BaseService {
   userRepo: Repository<AppUser>;
 
   @Inject()
+  redis: RedisService;
+
+  @Inject()
   ctx;
 
   async getBookList(
@@ -43,15 +48,28 @@ export class BookService extends BaseService {
     let bookList = [];
 
     if (tag) {
-      bookList = await this.bookRepo
-        .createQueryBuilder('book')
-        .where('book.book_status = :status', { status: 1 })
-        .andWhere('JSON_CONTAINS(tags, JSON_ARRAY(:tag))', { tag })
-        .orderBy('book.sort_by', 'DESC')
-        .addOrderBy('book.id', 'DESC')
-        .take(size)
-        .skip((page - 1) * size)
-        .getMany();
+      if (tag === 'RECOMMEND') {
+        const ids = await this.recommendBooks((user || {}).user_id, size);
+        if (ids.length > 0) {
+          bookList = await this.bookRepo.findBy({ id: In(ids) });
+        } else {
+          bookList = await this.bookRepo.find({
+            where: { book_status: 1 },
+            order: { sort_by: 'DESC', id: 'DESC' },
+            take: size,
+          });
+        }
+      } else {
+        bookList = await this.bookRepo
+          .createQueryBuilder('book')
+          .where('book.book_status = :status', { status: 1 })
+          .andWhere('JSON_CONTAINS(tags, JSON_ARRAY(:tag))', { tag })
+          .orderBy('book.sort_by', 'DESC')
+          .addOrderBy('book.id', 'DESC')
+          .take(size)
+          .skip((page - 1) * size)
+          .getMany();
+      }
     } else if (ids && ids.length != 0) {
       bookList = await this.bookRepo.findBy({ id: In(ids) });
     } else {
@@ -155,6 +173,59 @@ export class BookService extends BaseService {
     }
 
     return result;
+  }
+
+  async recommendBooks(userId: string | undefined, size: number) {
+    if (!userId) {
+      return [];
+    }
+    let books: any = await this.redis.get('book:recommendations');
+    if (!books) {
+      return [];
+    }
+
+    const trackList = await this.trackRepo.find({
+      where: {
+        user_id: userId,
+        content_type: 0,
+        track_type: 0,
+      },
+      order: {
+        update_time: 'DESC',
+      },
+      select: ['content_id'],
+      take: 5,
+    });
+
+    if (trackList.length <= 0) {
+      return [];
+    }
+    const userReadBooks = trackList.map(t => Number(t.content_id));
+    books = JSON.parse(books);
+    const recommendations = {};
+    const tfidf = new TfIdf();
+
+    books.forEach(book => {
+      tfidf.addDocument(book.tags);
+    });
+    userReadBooks.forEach(bookId => {
+      const idx = books.findIndex(book => book.id === bookId);
+      if (idx !== -1) {
+        const scores = tfidf.tfidfs(books[idx].tags);
+        books.forEach((book, i) => {
+          if (!userReadBooks.includes(book.id)) {
+            recommendations[book.id] =
+              (recommendations[book.id] || 0) +
+              scores[i] +
+              book.completion_rate * 0.4;
+          }
+        });
+      }
+    });
+    return Object.entries(recommendations)
+      .sort((a, b) => Number(b[1]) - Number(a[1]))
+      .slice(0, size)
+      .map(entry => parseInt(entry[0]));
   }
 
   async searchBook(keyword: string, page: number, size: number) {
