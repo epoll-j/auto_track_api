@@ -35,6 +35,7 @@
     "mini-svg-data-uri": "^1.4.4",
     "moment": "^2.30.1",
     "mysql2": "^3.9.7",
+    "natural": "^8.0.1",
     "svg-captcha": "^1.4.0",
     "svg2png-wasm": "^1.4.1",
     "typeorm": "^0.3.20",
