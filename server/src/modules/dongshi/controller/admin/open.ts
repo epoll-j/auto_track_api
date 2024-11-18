@@ -1,4 +1,4 @@
-import { Body, Post, Provide } from '@midwayjs/decorator';
+import { Body, Config, Post, Provide } from '@midwayjs/decorator';
 import { CoolController, BaseController } from '@cool-midway/core';
 import axios from 'axios';
 
@@ -8,6 +8,9 @@ import axios from 'axios';
 @Provide()
 @CoolController()
 export class BookController extends BaseController {
+  @Config('module.dongshi.tyqw')
+  apiKey: string;
+
   @Post('/gpt')
   async gpt(@Body() body: any) {
     const result = await axios.post(
@@ -20,7 +23,7 @@ export class BookController extends BaseController {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer',
+          Authorization: `Bearer ${this.apiKey}`,
         },
       }
     );

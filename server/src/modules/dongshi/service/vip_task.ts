@@ -1,12 +1,13 @@
 import { Inject, Logger, Provide } from '@midwayjs/decorator';
 import { BaseService } from '@cool-midway/core';
 import * as moment from 'moment';
-import { LessThan, Not, Repository } from 'typeorm';
+import { In, LessThan, Not, Repository } from 'typeorm';
 import { AppUser } from '../entity/app_user';
 import { Track } from '../entity/track';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { RedisService } from '@midwayjs/redis';
 import { ApnsService } from './apns';
+import { UserChallenge } from '../entity/user_challenge';
 
 /**
  * 描述
@@ -18,6 +19,9 @@ export class VipTaskService extends BaseService {
 
   @InjectEntityModel(AppUser)
   userRepo: Repository<AppUser>;
+
+  @InjectEntityModel(UserChallenge)
+  userChallengeRepo: Repository<UserChallenge>;
 
   @Inject()
   apnsService: ApnsService;
@@ -51,6 +55,20 @@ export class VipTaskService extends BaseService {
 
       await this.trackRepo.save(track);
     }
+
+    const finishIdList = await this.redis.smembers('user_challenge_finish');
+    await this.redis.del('user_challenge_finish');
+    await this.userChallengeRepo.update(
+      { id: In(finishIdList.map(item => Number(item))) },
+      { status: 1 }
+    );
+
+    await this.userChallengeRepo
+      .createQueryBuilder()
+      .update(UserChallenge)
+      .set({ daily_finish: 0 })
+      .execute();
+
     return '会员状态更新任务执行完成';
   }
 

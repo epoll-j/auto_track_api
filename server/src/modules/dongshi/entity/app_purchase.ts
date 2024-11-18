@@ -71,6 +71,9 @@ export class AppPurchase {
   @Column('varchar', { name: 'purchase_currency', length: 50 })
   purchase_currency: string;
 
+  @Column('int', { name: 'transaction_status', nullable: true })
+  transaction_status: number;
+
   @CreateDateColumn({
     type: 'datetime',
     name: 'create_time',

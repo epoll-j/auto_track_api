@@ -6,12 +6,15 @@ import { Book } from '../entity/book';
 import { KeyPoint } from '../entity/key_point';
 import { Track } from '../entity/track';
 import { AppUser } from '../entity/app_user';
+import { TfIdf } from 'natural';
+import { RedisService } from '@midwayjs/redis';
 
 const SearchType = {
   WEEKLY_HIGHLIGHTS: 0,
   EXPLORE: 1,
   CONTINUE: 2,
   SAVE_FOR_LATER: 3,
+  FINISH_READING: 4,
 };
 
 @Provide()
@@ -29,22 +32,46 @@ export class BookService extends BaseService {
   userRepo: Repository<AppUser>;
 
   @Inject()
+  redis: RedisService;
+
+  @Inject()
   ctx;
 
-  async getBookList(type: number, tag: string, page: number, size: number) {
+  async getBookList(
+    type: number,
+    tag: string,
+    page: number,
+    size: number,
+    ids: Array<Number>
+  ) {
     const { user } = this.ctx;
     let bookList = [];
 
     if (tag) {
-      bookList = await this.bookRepo
-        .createQueryBuilder('book')
-        .where('book.book_status = :status', { status: 1 })
-        .andWhere('JSON_CONTAINS(tags, JSON_ARRAY(:tag))', { tag })
-        .orderBy('book.sort_by', 'DESC')
-        .addOrderBy('book.id', 'DESC')
-        .take(size)
-        .skip((page - 1) * size)
-        .getMany();
+      if (tag === 'RECOMMEND') {
+        const ids = await this.recommendBooks((user || {}).user_id, size);
+        if (ids.length > 0) {
+          bookList = await this.bookRepo.findBy({ id: In(ids) });
+        } else {
+          bookList = await this.bookRepo.find({
+            where: { book_status: 1 },
+            order: { sort_by: 'DESC', id: 'DESC' },
+            take: size,
+          });
+        }
+      } else {
+        bookList = await this.bookRepo
+          .createQueryBuilder('book')
+          .where('book.book_status = :status', { status: 1 })
+          .andWhere('JSON_CONTAINS(tags, JSON_ARRAY(:tag))', { tag })
+          .orderBy('book.sort_by', 'DESC')
+          .addOrderBy('book.id', 'DESC')
+          .take(size)
+          .skip((page - 1) * size)
+          .getMany();
+      }
+    } else if (ids && ids.length != 0) {
+      bookList = await this.bookRepo.findBy({ id: In(ids) });
     } else {
       const intType = parseInt((type || 1).toString(), 10);
       if (
@@ -62,23 +89,30 @@ export class BookService extends BaseService {
           .skip((page - 1) * size)
           .getMany();
       } else if (
-        [SearchType.CONTINUE, SearchType.SAVE_FOR_LATER].includes(intType) &&
+        [
+          SearchType.CONTINUE,
+          SearchType.SAVE_FOR_LATER,
+          SearchType.FINISH_READING,
+        ].includes(intType) &&
         user
       ) {
         const userId = user.user_id;
         let trackList = [];
-        if (intType === SearchType.CONTINUE) {
-          trackList = await this.trackRepo.find({
-            where: {
-              user_id: userId,
-              content_type: 0,
-              track_type: 0,
-            },
-            order: {
-              update_time: 'DESC',
-            },
-            take: 15,
-          });
+        if (
+          intType === SearchType.CONTINUE ||
+          intType === SearchType.FINISH_READING
+        ) {
+          trackList = await this.trackRepo
+            .createQueryBuilder('track')
+            .where('track.user_id = :userId', { userId: userId })
+            .andWhere('track.content_type = :contentType', { contentType: 0 })
+            .andWhere('track.track_type = :trackType', { trackType: 0 })
+            .andWhere('JSON_VALUE(track.param, "$.finish") = :finish', {
+              finish: intType === SearchType.CONTINUE ? 0 : 1,
+            })
+            .orderBy('track.update_time', 'DESC')
+            .take(20)
+            .getMany();
         } else {
           trackList = await this.trackRepo
             .createQueryBuilder('track')
@@ -87,7 +121,7 @@ export class BookService extends BaseService {
             .andWhere('track.track_type = :trackType', { trackType: 1 })
             .andWhere('JSON_VALUE(track.param, "$.late") = 1')
             .orderBy('track.update_time', 'DESC')
-            .take(15)
+            .take(20)
             .getMany();
         }
         const idList = trackList.map(t => t.content_id);
@@ -139,6 +173,59 @@ export class BookService extends BaseService {
     }
 
     return result;
+  }
+
+  async recommendBooks(userId: string | undefined, size: number) {
+    if (!userId) {
+      return [];
+    }
+    let books: any = await this.redis.get('book:recommendations');
+    if (!books) {
+      return [];
+    }
+
+    const trackList = await this.trackRepo.find({
+      where: {
+        user_id: userId,
+        content_type: 0,
+        track_type: 0,
+      },
+      order: {
+        update_time: 'DESC',
+      },
+      select: ['content_id'],
+      take: 5,
+    });
+
+    if (trackList.length <= 0) {
+      return [];
+    }
+    const userReadBooks = trackList.map(t => Number(t.content_id));
+    books = JSON.parse(books);
+    const recommendations = {};
+    const tfidf = new TfIdf();
+
+    books.forEach(book => {
+      tfidf.addDocument(book.tags);
+    });
+    userReadBooks.forEach(bookId => {
+      const idx = books.findIndex(book => book.id === bookId);
+      if (idx !== -1) {
+        const scores = tfidf.tfidfs(books[idx].tags);
+        books.forEach((book, i) => {
+          if (!userReadBooks.includes(book.id)) {
+            recommendations[book.id] =
+              (recommendations[book.id] || 0) +
+              scores[i] +
+              book.completion_rate * 0.4;
+          }
+        });
+      }
+    });
+    return Object.entries(recommendations)
+      .sort((a, b) => Number(b[1]) - Number(a[1]))
+      .slice(0, size)
+      .map(entry => parseInt(entry[0]));
   }
 
   async searchBook(keyword: string, page: number, size: number) {

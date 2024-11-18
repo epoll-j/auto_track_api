@@ -20,8 +20,11 @@ export class Book {
   @Column('int', { name: 'reading_time', default: () => "'0'" })
   reading_time: number;
 
-  @Column('json', { name: 'tags' })
+  @Column('json', { name: 'tags', nullable: true })
   tags: any;
+
+  @Column('json', { name: 'recommend_tags', nullable: true })
+  recommend_tags: any;
 
   @Column('varchar', { name: 'book_desc', length: 2048 })
   book_desc: string;

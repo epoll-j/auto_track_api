@@ -26,13 +26,15 @@ export class BookController extends BaseController {
     @Query('type') type: number,
     @Query('tag') tag: string,
     @Query('page') page?: number,
-    @Query('size') size?: number
+    @Query('size') size?: number,
+    @Query('ids') ids?: Array<number>
   ) {
     const result = await this.bookService.getBookList(
       type,
       tag,
       page || 1,
-      size || 30
+      size || 15,
+      ids
     );
     return this.ok(result);
   }
