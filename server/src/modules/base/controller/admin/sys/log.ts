@@ -17,16 +17,16 @@ import { BaseSysLogService } from '../../../service/sys/log';
     url: ['add'],
   },
   pageQueryOp: {
-    keyWordLikeFields: ['b.name', 'a.params', 'a.ipAddr'],
-    select: ['a.*', 'b.name'],
-    join: [
-      {
-        entity: BaseSysUserEntity,
-        alias: 'b',
-        condition: 'a.userId = b.id',
-        type: 'leftJoin',
-      },
-    ],
+//    keyWordLikeFields: ['b.name', 'a.params', 'a.ipAddr'],
+//    select: ['a.*', 'b.name'],
+//    join: [
+//      {
+//        entity: BaseSysUserEntity,
+//        alias: 'b',
+//        condition: 'a.userId = b.id',
+//        type: 'leftJoin',
+//      },
+//    ],
   },
 })
 export class BaseSysLogController extends BaseController {

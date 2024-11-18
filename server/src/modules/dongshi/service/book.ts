@@ -107,7 +107,7 @@ export class BookService extends BaseService {
             .where('track.user_id = :userId', { userId: userId })
             .andWhere('track.content_type = :contentType', { contentType: 0 })
             .andWhere('track.track_type = :trackType', { trackType: 0 })
-            .andWhere('JSON_VALUE(track.param, "$.finish")', {
+            .andWhere('JSON_VALUE(track.param, "$.finish") = :finish', {
               finish: intType === SearchType.CONTINUE ? 0 : 1,
             })
             .orderBy('track.update_time', 'DESC')

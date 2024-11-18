@@ -119,7 +119,8 @@ export class ChallengeService extends BaseService {
       }
       if (progress[0] > 0) {
         userChallenge.status = 0;
-      } else if (progress.reduce((pre, cur) => pre + cur) >= bookList.length) {
+      }
+      if (progress.reduce((pre, cur) => pre + cur) >= bookList.length) {
         userChallenge.status = 1;
       }
       await this.userChallengeRepo.save(userChallenge);
