@@ -107,7 +107,7 @@ export class BookService extends BaseService {
             .where('track.user_id = :userId', { userId: userId })
             .andWhere('track.content_type = :contentType', { contentType: 0 })
             .andWhere('track.track_type = :trackType', { trackType: 0 })
-            .andWhere('JSON_VALUE(track.param, "$.finish") = :finish', {
+            .andWhere('JSON_VALUE(track.param, "$.finish")', {
               finish: intType === SearchType.CONTINUE ? 0 : 1,
             })
             .orderBy('track.update_time', 'DESC')
@@ -179,53 +179,14 @@ export class BookService extends BaseService {
     if (!userId) {
       return [];
     }
-    let books: any = await this.redis.get('book:recommendations');
-    if (!books) {
-      return [];
+    const recommendations = await this.redis.get(
+      `book:recommendations:${userId}`
+    );
+    if (recommendations) {
+      return JSON.parse(recommendations);
     }
 
-    const trackList = await this.trackRepo.find({
-      where: {
-        user_id: userId,
-        content_type: 0,
-        track_type: 0,
-      },
-      order: {
-        update_time: 'DESC',
-      },
-      select: ['content_id'],
-      take: 5,
-    });
-
-    if (trackList.length <= 0) {
-      return [];
-    }
-    const userReadBooks = trackList.map(t => Number(t.content_id));
-    books = JSON.parse(books);
-    const recommendations = {};
-    const tfidf = new TfIdf();
-
-    books.forEach(book => {
-      tfidf.addDocument(book.tags);
-    });
-    userReadBooks.forEach(bookId => {
-      const idx = books.findIndex(book => book.id === bookId);
-      if (idx !== -1) {
-        const scores = tfidf.tfidfs(books[idx].tags);
-        books.forEach((book, i) => {
-          if (!userReadBooks.includes(book.id)) {
-            recommendations[book.id] =
-              (recommendations[book.id] || 0) +
-              scores[i] +
-              book.completion_rate * 0.4;
-          }
-        });
-      }
-    });
-    return Object.entries(recommendations)
-      .sort((a, b) => Number(b[1]) - Number(a[1]))
-      .slice(0, size)
-      .map(entry => parseInt(entry[0]));
+    return [];
   }
 
   async searchBook(keyword: string, page: number, size: number) {

@@ -107,4 +107,64 @@ export class BookTagsTaskService extends BaseService {
     );
     return '设置推荐列表';
   }
+
+  async updateUserRecommendations() {
+    const key = 'book:recommendations';
+    const userIdList = await this.redis.smembers(`${key}:update`);
+    let books: any = await this.redis.get('book:recommendations');
+    if (!books) {
+      return '完播率列表为空';
+    }
+    await this.redis.del(`${key}:update`);
+    for (const userId of userIdList) {
+      const trackList = await this.trackRepo.find({
+        where: {
+          user_id: userId,
+          content_type: 0,
+          track_type: 0,
+        },
+        order: {
+          update_time: 'DESC',
+        },
+        select: ['content_id'],
+        take: 5,
+      });
+
+      if (trackList.length <= 0) {
+        continue;
+      }
+      const userReadBooks = trackList.map(t => Number(t.content_id));
+      books = JSON.parse(books);
+      const recommendations = {};
+      const tfidf = new TfIdf();
+
+      books.forEach(book => {
+        tfidf.addDocument(book.tags);
+      });
+      userReadBooks.forEach(bookId => {
+        const idx = books.findIndex(book => book.id === bookId);
+        if (idx !== -1) {
+          const scores = tfidf.tfidfs(books[idx].tags);
+          books.forEach((book, i) => {
+            if (!userReadBooks.includes(book.id)) {
+              recommendations[book.id] =
+                (recommendations[book.id] || 0) +
+                scores[i] +
+                book.completion_rate * 0.4;
+            }
+          });
+        }
+      });
+      await this.redis.set(
+        `${key}:${userId}`,
+        JSON.stringify(
+          Object.entries(recommendations)
+            .sort((a, b) => Number(b[1]) - Number(a[1]))
+            .slice(0, 15)
+            .map(entry => parseInt(entry[0]))
+        )
+      );
+    }
+    return '更新用户推荐列表';
+  }
 }

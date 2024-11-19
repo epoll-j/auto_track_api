@@ -55,6 +55,20 @@ export class ApnsService {
     return { code: 1 };
   }
 
+  async sendByMap(map: { [key: string]: any }) {
+    try {
+      const token = await this.apnsTokenRepo.findBy({
+        user_id: In(Object.keys(map)),
+      });
+      const notifications = token.map(
+        item => new Notification(item.device_token, map[item.user_id])
+      );
+      console.log(await this.apnsClient.sendMany(notifications));
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   async sendAll(body) {
     try {
       const token = await this.apnsTokenRepo.find({
