@@ -24,7 +24,7 @@ import {
     color: string;
   
     @Column('json', { name: 'book_ids' })
-    book_ids: string[];
+    book_ids: number[];
   
     @Column('json', { name: 'trophy_imgs' })
     trophy_imgs: string[];

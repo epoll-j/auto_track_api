@@ -32,6 +32,9 @@ export class Book {
   @Column('varchar', { name: 'inside', length: 2048 })
   inside: string;
 
+  @Column('varchar', { name: 'effect', length: 2048, nullable: true })
+  effect: string;
+
   @Column('varchar', { name: 'cover', length: 2048 })
   cover: string;
 
