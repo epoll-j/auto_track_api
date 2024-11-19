@@ -9,6 +9,7 @@ import { Challenge } from '../entity/challenge';
 import { UserChallenge } from '../entity/user_challenge';
 import { KeyPoint } from '../entity/key_point';
 import { RedisService } from '@midwayjs/redis';
+import { ApnsService } from './apns';
 
 @Provide()
 export class TrackService extends BaseService {
@@ -26,6 +27,9 @@ export class TrackService extends BaseService {
 
   @InjectEntityModel(KeyPoint)
   keyPointRepo: Repository<KeyPoint>;
+
+  @Inject()
+  apnsService: ApnsService;
 
   @Inject()
   redis: RedisService;
@@ -71,6 +75,8 @@ export class TrackService extends BaseService {
     await this.trackRepo.save(track);
     // 处理挑战进度
     if (content_type === 0 && track_type === 0) {
+      // 更新推荐内容
+      await this.redis.sadd('book:recommendations:update', userId);
       const challengeList = await this.challengeRepo
         .createQueryBuilder('challenge')
         .where('challenge.status = :status', { status: 1 })
@@ -111,12 +117,46 @@ export class TrackService extends BaseService {
                 userChallenge.challenge_progress.reduce((pre, cur) => {
                   return pre + cur;
                 }) / challenge.book_ids.length;
+
+              let middleNotification = true;
+              for (
+                let i = 0;
+                i < userChallenge.challenge_progress.length / 2;
+                i++
+              ) {
+                if (userChallenge.challenge_progress[i] < 1) {
+                  middleNotification = false;
+                  break;
+                }
+              }
+              if (middleNotification) {
+                const key = `user_challenge_middle_notification:${challenge.id}:${userId}`;
+                const exist = await this.redis.get(key);
+                if (!exist) {
+                  await this.apnsService.send(userId, {
+                    alert: {
+                      body: '每天阅读一点，改变就在发生！',
+                      title: '👍🏻您已完成挑战的一半，离目标更近一部！',
+                      subTitle: '',
+                    },
+                  });
+                  await this.redis.setex(key, 60 * 60 * 24 * 30, '1');
+                }
+              }
+
               if (progress >= 1) {
                 // 完成挑战
                 await this.redis.sadd(
                   'user_challenge_finish',
                   userChallenge.id
                 );
+                await this.apnsService.send(userId, {
+                  alert: {
+                    body: '还有更多知识等你探索，下一个挑战已准备好！',
+                    title: `🏆恭喜完成${challenge.title}`,
+                    subTitle: '',
+                  },
+                });
               }
               userChallenge.update_time = null;
               await this.userChallengeRepo.save(userChallenge);
