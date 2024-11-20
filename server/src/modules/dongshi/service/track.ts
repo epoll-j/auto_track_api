@@ -136,7 +136,7 @@ export class TrackService extends BaseService {
                   await this.apnsService.send(userId, {
                     alert: {
                       body: '每天阅读一点，改变就在发生！',
-                      title: '👍🏻您已完成挑战的一半，离目标更近一部！',
+                      title: '👍🏻完成一半，里目标更近一步！',
                       subTitle: '',
                     },
                   });
