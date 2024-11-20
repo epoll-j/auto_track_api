@@ -50,8 +50,9 @@ export class AuthMiddleware implements IMiddleware<Context, NextFunction> {
   }
 
   getABGroup(deviceId, numGroups) {
-    const hash = crypto.createHash('sha256').update(deviceId).digest('hex');
-    const groupIndex = parseInt(hash, 16) % numGroups;
+    const hashBuffer = crypto.createHash('sha256').update(deviceId).digest();
+    const relevantBytes = hashBuffer.readUInt32BE(0);
+    const groupIndex = relevantBytes % numGroups;
     return groupIndex; // 返回组索引（0 到 n-1）
   }
 }
