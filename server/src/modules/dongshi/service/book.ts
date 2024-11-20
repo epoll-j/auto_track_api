@@ -79,7 +79,7 @@ export class BookService extends BaseService {
         bookList = await this.bookRepo.find({
           where: { book_status: 1 },
           order: { id: 'DESC' },
-          take: size,
+          take: 6,
         });
       } else {
         bookList = await this.bookRepo
