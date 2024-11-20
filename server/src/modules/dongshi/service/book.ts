@@ -62,7 +62,7 @@ export class BookService extends BaseService {
       } else if (tag === 'NEW') {
         bookList = await this.bookRepo.find({
           where: { book_status: 1 },
-          order: { sort_by: 'DESC', id: 'DESC' },
+          order: { id: 'DESC' },
           take: size,
         });
       } else {
