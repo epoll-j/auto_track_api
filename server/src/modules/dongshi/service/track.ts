@@ -136,11 +136,11 @@ export class TrackService extends BaseService {
                   await this.apnsService.send(userId, {
                     alert: {
                       body: '每天阅读一点，改变就在发生！',
-                      title: '👍🏻完成一半，里目标更近一步！',
+                      title: '👍🏻完成一半，离目标更近一步！',
                       subTitle: '',
                     },
                   });
-                  await this.redis.setex(key, 60 * 60 * 24 * 30, '1');
+                  await this.redis.setex(key, 60 * 60 * 24 * 30 * 6, '1');
                 }
               }
 
