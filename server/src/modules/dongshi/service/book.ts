@@ -6,7 +6,6 @@ import { Book } from '../entity/book';
 import { KeyPoint } from '../entity/key_point';
 import { Track } from '../entity/track';
 import { AppUser } from '../entity/app_user';
-import { TfIdf } from 'natural';
 import { RedisService } from '@midwayjs/redis';
 
 const SearchType = {
@@ -56,9 +55,26 @@ export class BookService extends BaseService {
           bookList = await this.bookRepo.find({
             where: { book_status: 1 },
             order: { sort_by: 'DESC', id: 'DESC' },
-            take: size,
+            take: 6,
           });
         }
+      } else if (tag === 'TREND') {
+        const trackList = await this.trackRepo
+          .createQueryBuilder('track')
+          .select('track.content_id', 'content_id')
+          .addSelect('COUNT(track.content_id)', 'count')
+          .where('track.update_time > :date15DaysAgo', {
+            date15DaysAgo: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+          })
+          .andWhere('track.content_type = :contentType', { contentType: 0 })
+          .andWhere('track.track_type = :trackType', { trackType: 0 })
+          .groupBy('track.content_id')
+          .orderBy('count', 'DESC')
+          .limit(6)
+          .getRawMany();
+        bookList = await this.bookRepo.findBy({
+          id: In(trackList.map(t => Number(t.content_id))),
+        });
       } else if (tag === 'NEW') {
         bookList = await this.bookRepo.find({
           where: { book_status: 1 },

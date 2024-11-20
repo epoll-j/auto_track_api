@@ -127,7 +127,7 @@ export class BookTagsTaskService extends BaseService {
           update_time: 'DESC',
         },
         select: ['content_id'],
-        take: 5,
+        take: 6,
       });
 
       if (trackList.length <= 0) {
@@ -160,7 +160,7 @@ export class BookTagsTaskService extends BaseService {
         JSON.stringify(
           Object.entries(recommendations)
             .sort((a, b) => Number(b[1]) - Number(a[1]))
-            .slice(0, 15)
+            .slice(0, 6)
             .map(entry => parseInt(entry[0]))
         )
       );
