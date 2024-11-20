@@ -1,6 +1,6 @@
 import { Inject, Provide } from '@midwayjs/decorator';
 import { BaseService } from '@cool-midway/core';
-import { Between, LessThan, Repository } from 'typeorm';
+import { Between, LessThan, LessThanOrEqual, Repository } from 'typeorm';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Book } from '../entity/book';
 import { ApnsService } from './apns';
@@ -23,7 +23,7 @@ export class ChallengeTaskService extends BaseService {
     const dailyList = await this.userChallengeRepo.find({
       where: {
         daily_finish: 0,
-        status: 0,
+        status: LessThanOrEqual(0),
         update_time: Between(
           new Date(Date.now() - 24 * 60 * 60 * 1000),
           new Date()
@@ -92,7 +92,7 @@ export class ChallengeTaskService extends BaseService {
     const dailyList = await this.userChallengeRepo.find({
       where: {
         daily_finish: 0,
-        status: 0,
+        status: LessThanOrEqual(0),
         update_time: Between(
           new Date(Date.now() - 24 * 60 * 60 * 1000),
           new Date()
