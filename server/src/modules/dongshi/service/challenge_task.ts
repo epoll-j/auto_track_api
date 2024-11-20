@@ -117,7 +117,7 @@ export class ChallengeTaskService extends BaseService {
         apnsMap[userId] = {
           alert: {
             body: '只需几分钟，为今天的目标画上圆满句号！',
-            title: `🌿${challenge.title}Day ${index + 1}还在等你！`,
+            title: `🌿${challenge.title}挑战Day ${index + 1}还在等你！`,
             subTitle: '',
           },
         };
@@ -183,7 +183,7 @@ export class ChallengeTaskService extends BaseService {
             }分钟，马上补上，你会发现自己更棒！`;
           } else {
             title = '🙁 再不回来，它就要被记忆封印了！';
-            body = `还记得${challenge.title}的 Day ${index + 1} 吗？《${
+            body = `还记得${challenge.title}挑战的 Day ${index + 1} 吗？《${
               book.title
             }》正在等你解锁，你只需要花几分钟就能搞定！  \n别让它孤单，完成它，你会发现自己超厉害！`;
           }
