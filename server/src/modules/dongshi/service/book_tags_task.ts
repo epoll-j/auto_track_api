@@ -150,7 +150,7 @@ export class BookTagsTaskService extends BaseService {
               recommendations[book.id] =
                 (recommendations[book.id] || 0) +
                 scores[i] +
-                book.completion_rate * 0.4;
+                book.completion_rate * 100 * 0.1;
             }
           });
         }
