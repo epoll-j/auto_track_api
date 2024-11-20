@@ -39,7 +39,7 @@ export class AuthMiddleware implements IMiddleware<Context, NextFunction> {
               .digest('hex');
             if (verifiedSignature === signature) {
               ctx.deviceId = deviceId;
-              ctx.abGroup = this.getABGroup(deviceId, 3);
+              ctx.abGroup = this.getABGroup(deviceId, 4);
             }
           }
         }

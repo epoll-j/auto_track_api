@@ -59,6 +59,12 @@ export class BookService extends BaseService {
             take: size,
           });
         }
+      } else if (tag === 'NEW') {
+        bookList = await this.bookRepo.find({
+          where: { book_status: 1 },
+          order: { sort_by: 'DESC', id: 'DESC' },
+          take: size,
+        });
       } else {
         bookList = await this.bookRepo
           .createQueryBuilder('book')
@@ -107,7 +113,7 @@ export class BookService extends BaseService {
             .where('track.user_id = :userId', { userId: userId })
             .andWhere('track.content_type = :contentType', { contentType: 0 })
             .andWhere('track.track_type = :trackType', { trackType: 0 })
-            .andWhere('JSON_VALUE(track.param, "$.finish")', {
+            .andWhere('JSON_VALUE(track.param, "$.finish") = :finish', {
               finish: intType === SearchType.CONTINUE ? 0 : 1,
             })
             .orderBy('track.update_time', 'DESC')

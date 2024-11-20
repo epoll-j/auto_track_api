@@ -56,7 +56,7 @@ export class UserService extends BaseService {
         vip_type: 0,
         expiration_time: null,
       };
-      if (!this.ctx.abGroup || this.ctx.abGroup === 0) {
+      if (!this.ctx.abGroup || [0, 3].includes(this.ctx.abGroup)) {
         newDb = {
           user_id: uuidv4().replace(/-/g, ''),
           jwt_version: 0,
@@ -90,7 +90,7 @@ export class UserService extends BaseService {
       vip_type: 0,
       expiration_time: null,
     };
-    if (!this.ctx.abGroup || this.ctx.abGroup === 0) {
+    if (!this.ctx.abGroup || [0, 3].includes(this.ctx.abGroup)) {
       newDb = {
         user_id: uuidv4().replace(/-/g, ''),
         jwt_version: 0,

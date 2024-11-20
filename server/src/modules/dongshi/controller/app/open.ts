@@ -5,7 +5,6 @@ import { Context } from '@midwayjs/koa';
 import { CoolController } from '@cool-midway/core';
 import BaseController from '../base_controller';
 import { ApnsService } from '../../service/apns';
-import * as crypto from 'crypto';
 import * as _ from 'lodash';
 
 @Provide()
@@ -25,19 +24,19 @@ export class UserController extends BaseController {
     const basic = await this.baseSysParamService.dataByKey('ds_config');
     let mergeConfig = {};
     if (this.ctx.deviceId) {
-      const groupIndex = this.getABGroup(this.ctx.deviceId, 3);
+      const groupIndex = this.ctx.abGroup;
       if (groupIndex !== 0) {
         mergeConfig = await this.baseSysParamService.dataByKey(
           `ds_config_${groupIndex}`
         );
       }
     }
-    // if (this.ctx.headers['app_version'] === '1.3.1') {
+    // if (this.ctx.headers['app_version'] === '1.4.0') {
     //   return this.ok(
     //     _.merge(basic, {
     //       products: [
     //         {
-    //           product_id: 'iap_subscribe_year_free_198',
+    //           product_id: 'iap_subscribe_year_198',
     //           product_name: '年度订阅',
     //           product_price: '198',
     //           product_original_price: '298',
@@ -57,12 +56,6 @@ export class UserController extends BaseController {
     //   );
     // }
     return this.ok(_.merge(basic, mergeConfig));
-  }
-
-  getABGroup(deviceId, numGroups) {
-    const hash = crypto.createHash('sha256').update(deviceId).digest('hex');
-    const groupIndex = parseInt(hash, 16) % numGroups;
-    return groupIndex; // 返回组索引（0 到 n-1）
   }
 
   @Get('/sms')
