@@ -153,7 +153,7 @@ export class TrackService extends BaseService {
                 await this.apnsService.send(userId, {
                   alert: {
                     body: '还有更多知识等你探索，下一个挑战已准备好！',
-                    title: `🏆恭喜完成${challenge.title}}挑战`,
+                    title: `🏆恭喜完成${challenge.title}挑战`,
                     subTitle: '',
                   },
                 });

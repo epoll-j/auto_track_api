@@ -68,7 +68,7 @@ export class ChallengeTaskService extends BaseService {
             const challenge = challengeMap[progress.challenge_id];
             const index = progress.challenge_progress.findIndex(p => p < 1);
             const book = bookMap[challenge.book_ids[index]];
-            body += `${challenge.title}Day ${index + 1}: ${
+            body += `${challenge.title}挑战Day ${index + 1}: ${
               i === 0 ? '阅读' : '探索'
             }《${book.title}》${i === 0 ? '\n' : ''}`;
           }
