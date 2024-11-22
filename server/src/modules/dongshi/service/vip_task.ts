@@ -67,6 +67,7 @@ export class VipTaskService extends BaseService {
       .createQueryBuilder()
       .update(UserChallenge)
       .set({ daily_finish: 0 })
+      .where('daily_finish = :daily_finish', { daily_finish: 1 })
       .execute();
 
     return '会员状态更新任务执行完成';
